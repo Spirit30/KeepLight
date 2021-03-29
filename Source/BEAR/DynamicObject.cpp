@@ -3,25 +3,31 @@
 
 #include "DynamicObject.h"
 
-// Sets default values
 ADynamicObject::ADynamicObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SetTickGroup(TG_DuringPhysics);
 }
 
-// Called when the game starts or when spawned
+UStaticMeshComponent* ADynamicObject::GetStaticMeshComponent()
+{
+	return StaticMeshComponent;
+}
+
 void ADynamicObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	StaticMeshComponent = Cast<UStaticMeshComponent>(GetComponentByClass(UStaticMeshComponent::StaticClass()));
 }
 
-// Called every frame
 void ADynamicObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// if(StaticMeshComponent->GetComponentVelocity().SizeSquared() > CalmDownSquaredVelocity)
+	// {
+	// 	StaticMeshComponent->AddForce(Gravity);
+	// }
 }
 

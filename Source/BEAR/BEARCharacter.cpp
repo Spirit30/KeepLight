@@ -186,7 +186,7 @@ bool ABEARCharacter::CanDrag()
 	{
 		const auto Direction = (PotentialDragObject->GetActorLocation() - GetActorLocation()).GetUnsafeNormal();
 		
-		if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0)
+		if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0.75f)
 		{
 			ActiveDragObject = PotentialDragObject;
 			ActiveDragComponent = Cast<UPrimitiveComponent>(ActiveDragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));

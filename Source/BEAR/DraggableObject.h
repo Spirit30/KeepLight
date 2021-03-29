@@ -44,24 +44,9 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator LeftHandDragRotation;
 
-	// /** called when something enters the sphere component */
-	// UFUNCTION()
- //    void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
- //
-	// /** called when something leaves the sphere component */
-	// UFUNCTION()
- //    void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
- //
-	// bool IsGround() const;
+	ADraggableObject();
 
 	protected:
-
-	//virtual void BeginPlay() override;
-
-	private:
-
-	// int32 EnvironmentsCount;
-	// USphereComponent* GroundCollision;
-	//
-	// USphereComponent* FindGroundCollision() const;
+	
+	virtual void Tick(float DeltaTime) override;
 };

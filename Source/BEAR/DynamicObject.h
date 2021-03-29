@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "DynamicObject.generated.h"
 
 UCLASS()
@@ -11,16 +12,22 @@ class BEAR_API ADynamicObject : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+	public:
+
+	// UPROPERTY(EditAnywhere)
+	// FVector Gravity;
+	//
+	// UPROPERTY(EditAnywhere)
+	// float CalmDownSquaredVelocity;
+	//
 	ADynamicObject();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UStaticMeshComponent* GetStaticMeshComponent();
 
-public:	
-	// Called every frame
+	protected:
+
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	UStaticMeshComponent* StaticMeshComponent;
 };
