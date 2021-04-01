@@ -118,13 +118,17 @@ void ABEARCharacter::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, c
 	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, OtherActor->GetName());
 
 	const auto CloseDragObject = Cast<ADraggableObject>(OtherActor);
-	const auto CloseDragComponent = OtherComp; //Cast<UPrimitiveComponent>(DragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 
-	RightHandRotation = CloseDragObject->RightHandDragRotation;
-	LeftHandRotation = CloseDragObject->LeftHandDragRotation;
+	if(CloseDragObject)
+	{
+		const auto CloseDragComponent = OtherComp; //Cast<UPrimitiveComponent>(DragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 
-	CloseDragObjects.Add(CloseDragObject);
-	CloseDragComponents.Add(CloseDragComponent);
+		RightHandRotation = CloseDragObject->RightHandDragRotation;
+		LeftHandRotation = CloseDragObject->LeftHandDragRotation;
+
+		CloseDragObjects.Add(CloseDragObject);
+		CloseDragComponents.Add(CloseDragComponent);
+	}
 }
 
 void ABEARCharacter::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

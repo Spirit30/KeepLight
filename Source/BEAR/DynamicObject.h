@@ -14,12 +14,12 @@ class BEAR_API ADynamicObject : public AActor
 	
 	public:
 
-	// UPROPERTY(EditAnywhere)
-	// FVector Gravity;
-	//
-	// UPROPERTY(EditAnywhere)
-	// float CalmDownSquaredVelocity;
-	//
+	UPROPERTY(EditAnywhere)
+	USoundWave* HitSound;
+
+	UPROPERTY(EditAnywhere)
+	float HitSoundImpulseThreshold;
+	
 	ADynamicObject();
 
 	UStaticMeshComponent* GetStaticMeshComponent();
@@ -28,6 +28,7 @@ class BEAR_API ADynamicObject : public AActor
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	UStaticMeshComponent* StaticMeshComponent;
 };

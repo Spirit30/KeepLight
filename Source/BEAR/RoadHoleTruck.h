@@ -36,6 +36,12 @@ class BEAR_API URoadHoleTruck : public UActorComponent
 
 	UPROPERTY(EditAnywhere)
 	FVector RangeDistOffsetPerItem;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* Creaking;
+
+	UPROPERTY(EditAnywhere)
+	FVector CreakingLocation;
 	
 	URoadHoleTruck();
 

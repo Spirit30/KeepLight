@@ -3,6 +3,10 @@
 
 #include "RoadHoleTruck.h"
 
+
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
+
 //#include "DrawDebugHelpers.h"
 
 URoadHoleTruck::URoadHoleTruck()
@@ -30,7 +34,7 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		const auto Player = RoadHoleTruckSequence->GetSequencePlayer();
 		const auto OriginLocation = GetOriginForCurrentItem();
 
-		//DrawDebugSphere(GetWorld(), OriginLocation, InRangeDist, 4, FColor::Red, false, DeltaTime);
+		DrawDebugSphere(GetWorld(), OriginLocation, InRangeDist, 4, FColor::Red, false, DeltaTime);
 
 		for(const auto Rock : Rocks)
 		{
@@ -51,26 +55,26 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 		if(NewInRangeCount != InRangeCount)
 		{		
-			if(NewInRangeCount > 0)
+			if(NewInRangeCount < SequenceTimePositions.Num())
 			{
-				const int InRangeIndex = NewInRangeCount - 1;
-			
-				if(InRangeIndex < SequenceTimePositions.Num())
-				{
-					const float PositionTime = SequenceTimePositions[InRangeIndex];
-					const auto Position = FMovieSceneSequencePlaybackParams(PositionTime,EUpdatePositionMethod::Play);
-					Player->PlayTo(Position);
-				}
-				else
-				{
-					Player->Play();
-					IsDone = true;
-				}
+				//Play to Position
+				const float PositionTime = SequenceTimePositions[NewInRangeCount];
+				const auto Position = FMovieSceneSequencePlaybackParams(PositionTime,EUpdatePositionMethod::Play);
+				Player->PlayTo(Position);
+			}
+			else
+			{
+				//Play to End
+				Player->Play();
+				IsDone = true;
 			}
 
 			InRangeCount = NewInRangeCount;
 
 			//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, FString::Printf(TEXT("InRangeCount: %d"), InRangeCount));
+
+			//Sound
+			UGameplayStatics::PlaySoundAtLocation(this, Creaking, CreakingLocation, FRotator::ZeroRotator);
 		}
 	}
 }
