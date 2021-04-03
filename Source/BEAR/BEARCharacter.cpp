@@ -32,7 +32,7 @@ ABEARCharacter::ABEARCharacter()
 	GetCharacterMovement()->MaxFlySpeed = 600.0f;
 
 	//Tick Group
-	SetTickGroup(TG_PrePhysics);
+	SetTickGroup(TG_DuringPhysics);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,11 +69,16 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 		{
 			ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 			
-			const float Dist = FVector::Distance(GetActorLocation(), ActiveDragComponent->GetComponentLocation());
+			const float PushVelocity = ActiveDragComponent->GetComponentVelocity().SizeSquared();
+
+			//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds * 2, FColor::Magenta, FString::Printf(TEXT("Velocity: %f"), PushVelocity));
 		
 			const float DragForce = 
                     //Bigger Dist means smaller Push Forces
-                    FMath::Lerp(ActiveDragObject->MaxPushForce, ActiveDragObject->MinPushForce, FMath::Clamp(Dist, ActiveDragObject->MinPushDist, ActiveDragObject->MaxPushDist) / ActiveDragObject->MaxPushDist);
+                    FMath::Lerp(
+                    	ActiveDragObject->MaxPushForce,
+                    	ActiveDragObject->MinPushForce,
+                    	FMath::Clamp(PushVelocity, ActiveDragObject->MinPushVelocity, ActiveDragObject->MaxPushVelocity) / ActiveDragObject->MaxPushVelocity);
 
 			const auto Force = GetActorForwardVector() * DragForce * DeltaSeconds;
 			ActiveDragComponent->AddForceAtLocation(Force, ActiveDragObject->GetActorLocation());

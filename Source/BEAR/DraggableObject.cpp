@@ -6,6 +6,8 @@
 ADraggableObject::ADraggableObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SetTickGroup(TG_DuringPhysics);
 }
 
 void ADraggableObject::Tick(float DeltaTime)

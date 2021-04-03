@@ -8,6 +8,7 @@
 ADynamicObject::ADynamicObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
 	SetTickGroup(TG_DuringPhysics);
 }
 
@@ -21,13 +22,19 @@ void ADynamicObject::BeginPlay()
 	Super::BeginPlay();
 
 	StaticMeshComponent = Cast<UStaticMeshComponent>(GetComponentByClass(UStaticMeshComponent::StaticClass()));
-	//StaticMeshComponent->OnComponentHit.AddDynamic(this, &ADynamicObject::NotifyHit)
+	//StaticMeshComponent->OnComponentHit.AddDynamic(this, &ADynamicObject::NotifyHit);
 }
 
 void ADynamicObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(IsFalling())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, DeltaTime, FColor::Cyan, "Add Extra Gravity");
+		
+		StaticMeshComponent->AddForce(ExtraGravity * DeltaTime);
+	}
 }
 
 void ADynamicObject::NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
@@ -53,3 +60,7 @@ void ADynamicObject::NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimit
 	}
 }
 
+bool ADynamicObject::IsFalling() const
+{
+	return StaticMeshComponent->GetComponentVelocity().Z < IsFallingThresholdZ;
+}

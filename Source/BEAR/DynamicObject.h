@@ -25,6 +25,12 @@ class BEAR_API ADynamicObject : public AActor
 
 	UPROPERTY(EditAnywhere)
 	float MinHitSoundInteval;
+
+	UPROPERTY(EditAnywhere)
+	float IsFallingThresholdZ;
+	
+	UPROPERTY(EditAnywhere)
+	FVector ExtraGravity;
 	
 	ADynamicObject();
 
@@ -41,4 +47,6 @@ class BEAR_API ADynamicObject : public AActor
 	private:
 
 	float LastHitSoundTime;
+
+	bool IsFalling() const;
 };
