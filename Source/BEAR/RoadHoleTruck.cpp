@@ -3,11 +3,9 @@
 
 #include "RoadHoleTruck.h"
 
-
-#include "DrawDebugHelpers.h"
-#include "Kismet/GameplayStatics.h"
-
 //#include "DrawDebugHelpers.h"
+#include "MovieSceneSequencePlayer.h"
+#include "Kismet/GameplayStatics.h"
 
 URoadHoleTruck::URoadHoleTruck()
 {
@@ -34,7 +32,7 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		const auto Player = RoadHoleTruckSequence->GetSequencePlayer();
 		const auto OriginLocation = GetOriginForCurrentItem();
 
-		DrawDebugSphere(GetWorld(), OriginLocation, InRangeDist, 4, FColor::Red, false, DeltaTime);
+		//DrawDebugSphere(GetWorld(), OriginLocation, InRangeDist, 4, FColor::Red, false, DeltaTime);
 
 		for(const auto Rock : Rocks)
 		{

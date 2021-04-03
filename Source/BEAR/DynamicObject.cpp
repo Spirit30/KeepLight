@@ -40,11 +40,16 @@ void ADynamicObject::NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimit
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Unknown HIT");
 	// }
+
+	const float CurrentTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
+	const float IntervalSinceLastHitSound = CurrentTime - LastHitSoundTime;
 	
-	if(HitSound && NormalImpulse.SizeSquared() > HitSoundImpulseThreshold)
+	if(HitSound && NormalImpulse.SizeSquared() > HitSoundImpulseThreshold && IntervalSinceLastHitSound > MinHitSoundInteval)
 	{
+		LastHitSoundTime = CurrentTime;
+	
 		//Sound
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, Comp->GetComponentLocation(), FRotator::ZeroRotator);
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, Comp->GetComponentLocation(), FRotator::ZeroRotator, HitSoundVolume);
 	}
 }
 

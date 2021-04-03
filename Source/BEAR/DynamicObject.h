@@ -18,7 +18,13 @@ class BEAR_API ADynamicObject : public AActor
 	USoundWave* HitSound;
 
 	UPROPERTY(EditAnywhere)
+	float HitSoundVolume;
+
+	UPROPERTY(EditAnywhere)
 	float HitSoundImpulseThreshold;
+
+	UPROPERTY(EditAnywhere)
+	float MinHitSoundInteval;
 	
 	ADynamicObject();
 
@@ -31,4 +37,8 @@ class BEAR_API ADynamicObject : public AActor
 	virtual void NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	UStaticMeshComponent* StaticMeshComponent;
+
+	private:
+
+	float LastHitSoundTime;
 };

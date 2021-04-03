@@ -76,7 +76,7 @@ void ABEARCharacter::Tick(float DeltaSeconds)
                     FMath::Lerp(ActiveDragObject->MaxPushForce, ActiveDragObject->MinPushForce, FMath::Clamp(Dist, ActiveDragObject->MinPushDist, ActiveDragObject->MaxPushDist) / ActiveDragObject->MaxPushDist);
 
 			const auto Force = GetActorForwardVector() * DragForce * DeltaSeconds;
-			ActiveDragComponent->AddForceAtLocation(Force, GetActorLocation());
+			ActiveDragComponent->AddForceAtLocation(Force, ActiveDragObject->GetActorLocation());
 		}
 		//Pull
 		else
