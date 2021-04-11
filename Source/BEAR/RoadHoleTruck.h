@@ -41,6 +41,9 @@ class BEAR_API URoadHoleTruck : public UActorComponent
 	USoundWave* Creaking;
 
 	UPROPERTY(EditAnywhere)
+	float CreakingVolume;
+
+	UPROPERTY(EditAnywhere)
 	FVector CreakingLocation;
 	
 	URoadHoleTruck();

@@ -64,45 +64,52 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds * 2, FColor::Magenta, FString::Printf(TEXT("Velocity: %f"), GetVelocity().Size()));
 
-		//Push
-		if(MoveDirection > 0)
+		if(CanDrag())
 		{
-			ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+			//Push
+			if(MoveDirection > 0)
+			{
+				ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 			
-			const float PushVelocity = ActiveDragComponent->GetComponentVelocity().SizeSquared();
+				const float PushVelocity = ActiveDragComponent->GetComponentVelocity().SizeSquared();
 
-			//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds * 2, FColor::Magenta, FString::Printf(TEXT("Velocity: %f"), PushVelocity));
+				//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds * 2, FColor::Magenta, FString::Printf(TEXT("Velocity: %f"), PushVelocity));
 		
-			const float DragForce = 
-                    //Bigger Dist means smaller Push Forces
-                    FMath::Lerp(
-                    	ActiveDragObject->MaxPushForce,
-                    	ActiveDragObject->MinPushForce,
-                    	FMath::Clamp(PushVelocity, ActiveDragObject->MinPushVelocity, ActiveDragObject->MaxPushVelocity) / ActiveDragObject->MaxPushVelocity);
+				const float DragForce = 
+                        //Bigger Dist means smaller Push Forces
+                        FMath::Lerp(
+                            ActiveDragObject->MaxPushForce,
+                            ActiveDragObject->MinPushForce,
+                            FMath::Clamp(PushVelocity, ActiveDragObject->MinPushVelocity, ActiveDragObject->MaxPushVelocity) / ActiveDragObject->MaxPushVelocity);
 
-			const auto Force = GetActorForwardVector() * DragForce * DeltaSeconds;
-			ActiveDragComponent->AddForceAtLocation(Force, ActiveDragObject->GetActorLocation());
+				const auto Force = GetActorForwardVector() * DragForce * DeltaSeconds;
+				ActiveDragComponent->AddForceAtLocation(Force, ActiveDragObject->GetActorLocation());
+			}
+			//Pull
+			else
+			{
+				ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			
+				auto TargetDragLocation = GetActorLocation() + GetActorForwardVector() * ActiveDragObject->PullDistance;
+				//Locked 2D
+				TargetDragLocation.X = 0;
+				//Controlled by Physics
+				TargetDragLocation.Z = ActiveDragObject->GetActorLocation().Z;
+			
+				auto DragLocation = FMath::Lerp(ActiveDragObject->GetActorLocation(), TargetDragLocation, DeltaSeconds * DragDistanceLerpSpeed);
+				//Locked 2D
+				DragLocation.X = 0;
+			
+				ActiveDragObject->SetActorLocation(DragLocation);
+			}
+		
+			RightHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->RightHandDragOffset;
+			LeftHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->LeftHandDragOffset;
 		}
-		//Pull
 		else
 		{
-			ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			
-			auto TargetDragLocation = GetActorLocation() + GetActorForwardVector() * ActiveDragObject->PullDistance;
-			//Locked 2D
-			TargetDragLocation.X = 0;
-			//Controlled by Physics
-			TargetDragLocation.Z = ActiveDragObject->GetActorLocation().Z;
-			
-			auto DragLocation = FMath::Lerp(ActiveDragObject->GetActorLocation(), TargetDragLocation, DeltaSeconds * DragDistanceLerpSpeed);
-			//Locked 2D
-			DragLocation.X = 0;
-			
-			ActiveDragObject->SetActorLocation(DragLocation);
+			StopInteract();
 		}
-		
-		RightHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->RightHandDragOffset;
-		LeftHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->LeftHandDragOffset;
 	}
 }
 

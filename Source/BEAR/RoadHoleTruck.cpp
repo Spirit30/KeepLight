@@ -72,7 +72,7 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, FString::Printf(TEXT("InRangeCount: %d"), InRangeCount));
 
 			//Sound
-			UGameplayStatics::PlaySoundAtLocation(this, Creaking, CreakingLocation, FRotator::ZeroRotator);
+			UGameplayStatics::PlaySoundAtLocation(this, Creaking, CreakingLocation, FRotator::ZeroRotator, CreakingVolume);
 		}
 	}
 }
