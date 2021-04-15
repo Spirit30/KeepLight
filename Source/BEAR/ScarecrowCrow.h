@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "BEARCharacter.h"
 #include "GameFramework/Actor.h"
 #include "ScarecrowCrow.generated.h"
 
@@ -13,8 +15,27 @@ class BEAR_API AScarecrowCrow : public AActor
 	
 	public:
 
+	UPROPERTY(EditAnywhere)
+	FName TargetSocketName;
+
+	UPROPERTY(EditAnywhere)
+	float Speed;
+
+	UPROPERTY(EditAnywhere)
+	float AttackDelay;
+
+	//Used by ScarecrowCrow Animation Blueprint
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool IsAttackAnimation;
 	
 	AScarecrowCrow();
+	
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	private:
+
+	float AttackTimer;
+
+	ABEARCharacter* Bear;
 };
