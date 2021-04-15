@@ -15,10 +15,6 @@ URoadHoleTruck::URoadHoleTruck()
 void URoadHoleTruck::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// const auto Player = RoadHoleTruckSequence->GetSequencePlayer();
-	// Player->Play();
-	// Player->Pause();
 }
 
 // Called every frame
@@ -57,7 +53,7 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			{
 				//Play to Position
 				const float PositionTime = SequenceTimePositions[NewInRangeCount];
-				const auto Position = FMovieSceneSequencePlaybackParams(PositionTime,EUpdatePositionMethod::Play);
+				const auto Position = FMovieSceneSequencePlaybackParams(PositionTime, EUpdatePositionMethod::Play);
 				Player->PlayTo(Position);
 			}
 			else
@@ -74,11 +70,26 @@ void URoadHoleTruck::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			//Sound
 			UGameplayStatics::PlaySoundAtLocation(this, Creaking, CreakingLocation, FRotator::ZeroRotator, CreakingVolume);
 		}
+
+		TrySetPassed();
 	}
 }
+
 
 FVector URoadHoleTruck::GetOriginForCurrentItem() const
 {
 	return GetOwner()->GetActorLocation() + RangeDistOffsetPerItem * InRangeCount;
 }
 
+void URoadHoleTruck::TrySetPassed()
+{
+	const auto Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+	if(Character->GetActorLocation().Y < PassY)
+	{
+		const auto Player = RoadHoleTruckSequence->GetSequencePlayer();
+		const auto Position = FMovieSceneSequencePlaybackParams(Player->GetDuration().AsSeconds(), EUpdatePositionMethod::Jump);
+		Player->SetPlaybackPosition(Position);
+		IsDone = true;
+	}
+}

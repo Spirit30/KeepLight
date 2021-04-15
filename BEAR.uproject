@@ -12,5 +12,14 @@
 				"Engine"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "DatasmithCADImporter",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
+		}
 	]
 }

@@ -45,6 +45,12 @@ class BEAR_API URoadHoleTruck : public UActorComponent
 
 	UPROPERTY(EditAnywhere)
 	FVector CreakingLocation;
+
+	UPROPERTY(EditAnywhere)
+	float PassY;
+	
+	UPROPERTY(EditAnywhere)
+	float SetPassedInitialDelay;
 	
 	URoadHoleTruck();
 
@@ -58,6 +64,8 @@ class BEAR_API URoadHoleTruck : public UActorComponent
 
 	int32 InRangeCount;
 	bool IsDone;
+	FTimerHandle SetPassedTimerHandle;
 
 	FVector GetOriginForCurrentItem() const;
+	void TrySetPassed();
 };
