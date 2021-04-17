@@ -6,6 +6,7 @@
 
 
 #include "DraggableObject.h"
+#include "Interactable.h"
 #include "GameFramework/Character.h"
 
 
@@ -48,15 +49,6 @@ class ABEARCharacter : public ACharacter
 	
 	/** Called for side to side input */
 	void MoveRight(float Val);
-
-	/** called when something enters the sphere component */
-	UFUNCTION()
-    void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	/** called when something leaves the sphere component */
-	UFUNCTION()
-    void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 	void Interact();
 	void StopInteract();
 	void TryJump();
@@ -64,7 +56,8 @@ class ABEARCharacter : public ACharacter
 	protected:
 
 	virtual void BeginPlay() override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual  void NotifyActorEndOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	// APawn interface
@@ -77,10 +70,11 @@ class ABEARCharacter : public ACharacter
 	float MaxWalkSpeed;
 	
 	TArray<ADraggableObject*> CloseDragObjects;
-	TArray<UPrimitiveComponent*> CloseDragComponents;
+	TArray<AInteractable*> CloseInteractables;
 
 	bool CanDrag();
+	bool CanInteract();
 
 	ADraggableObject* ActiveDragObject;
-	UPrimitiveComponent* ActiveDragComponent;
+	AInteractable* ActiveInteractable;
 };

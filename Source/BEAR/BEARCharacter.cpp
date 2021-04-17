@@ -53,9 +53,45 @@ void ABEARCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	auto Capsule = GetCapsuleComponent();
-	Capsule->OnComponentBeginOverlap.AddDynamic(this, &ABEARCharacter::OnOverlapBegin);
-	Capsule->OnComponentEndOverlap.AddDynamic(this, &ABEARCharacter::OnOverlapEnd);
+}
+
+void ABEARCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, OtherActor->GetName());
+
+	const auto CloseDragObject = Cast<ADraggableObject>(OtherActor);
+
+	if(CloseDragObject)
+	{
+		RightHandRotation = CloseDragObject->RightHandDragRotation;
+		LeftHandRotation = CloseDragObject->LeftHandDragRotation;
+
+		CloseDragObjects.Add(CloseDragObject);
+	}
+
+	const auto CloseInteractable = Cast<AInteractable>(OtherActor);
+
+	if(CloseInteractable)
+	{
+		CloseInteractables.Add(CloseInteractable);
+	}
+}
+
+void ABEARCharacter::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	if(OtherActor == ActiveDragObject)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, OtherActor->GetName());
+
+		StopInteract();
+	}
+
+	if(CloseDragObjects.Contains(OtherActor))
+	{
+		const auto CloseDragObject = Cast<ADraggableObject>(OtherActor);
+		
+		CloseDragObjects.Remove(CloseDragObject);
+	}
 }
 
 void ABEARCharacter::Tick(float DeltaSeconds)
@@ -66,6 +102,8 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 
 		if(CanDrag())
 		{
+			const auto ActiveDragComponent = ActiveDragObject->GetStaticMeshComponent();
+		
 			//Push
 			if(MoveDirection > 0)
 			{
@@ -125,43 +163,6 @@ void ABEARCharacter::MoveRight(float Value)
 	MoveDirection = FMath::Sign(Value) * CharacterDirectionCoef;
 }
 
-void ABEARCharacter::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, OtherActor->GetName());
-
-	const auto CloseDragObject = Cast<ADraggableObject>(OtherActor);
-
-	if(CloseDragObject)
-	{
-		const auto CloseDragComponent = OtherComp; //Cast<UPrimitiveComponent>(DragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-
-		RightHandRotation = CloseDragObject->RightHandDragRotation;
-		LeftHandRotation = CloseDragObject->LeftHandDragRotation;
-
-		CloseDragObjects.Add(CloseDragObject);
-		CloseDragComponents.Add(CloseDragComponent);
-	}
-}
-
-void ABEARCharacter::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if(OtherComp == ActiveDragComponent)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, OtherActor->GetName());
-
-		StopInteract();
-	}
-
-	if(CloseDragComponents.Contains(OtherComp))
-	{
-		const auto CloseDragObject = Cast<ADraggableObject>(OtherActor);
-		const auto CloseDragComponent = OtherComp; //Cast<UPrimitiveComponent>(DragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-		
-		CloseDragObjects.Remove(CloseDragObject);
-		CloseDragComponents.Remove(CloseDragComponent);
-	}
-}
-
 void ABEARCharacter::Interact()
 {
 	if(CanDrag())
@@ -171,12 +172,18 @@ void ABEARCharacter::Interact()
 
 		IsDrag = true;
 	}
+	else if(CanInteract())
+	{
+		ActiveInteractable->Interact();
+	}
 }
 
 void ABEARCharacter::StopInteract()
 {
 	if(IsDrag)
 	{
+		const auto ActiveDragComponent = ActiveDragObject->GetStaticMeshComponent();
+		
 		GetCharacterMovement()->MaxWalkSpeed = 	MaxWalkSpeed;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -184,7 +191,6 @@ void ABEARCharacter::StopInteract()
 
 		IsDrag = false;
 		ActiveDragObject = nullptr;
-		ActiveDragComponent = nullptr;
 	}
 }
 
@@ -205,8 +211,26 @@ bool ABEARCharacter::CanDrag()
 		if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0.75f)
 		{
 			ActiveDragObject = PotentialDragObject;
-			ActiveDragComponent = Cast<UPrimitiveComponent>(ActiveDragObject->FindComponentByClass(UStaticMeshComponent::StaticClass()));
 			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ABEARCharacter::CanInteract()
+{
+	for(auto PotentialInteractable : CloseInteractables)
+	{
+		if(PotentialInteractable->CanInteract())
+		{
+			const auto Direction = (PotentialInteractable->GetActorLocation() - GetActorLocation()).GetUnsafeNormal();
+		
+			if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0.75f)
+			{
+				ActiveInteractable = PotentialInteractable;
+				return true;
+			}
 		}
 	}
 
