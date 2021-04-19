@@ -6,6 +6,9 @@
 
 #include "BEARCharacter.h"
 #include "Interactable.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+
 #include "ScarecrowHat.generated.h"
 
 /**
@@ -30,6 +33,22 @@ class BEAR_API AScarecrowHat : public AInteractable
 	UPROPERTY(EditAnywhere)
 	AActor* HatMeshActor;
 
+	UPROPERTY(EditAnywhere)
+	float AttachSpeed = 5;
+	
+	UPROPERTY(EditAnywhere)
+	float AttachDistance = 10;
+
+	UPROPERTY(EditAnywhere)
+	FString BearTriggerName;
+
+	UPROPERTY(EditAnywhere)
+	FString CrowTriggerName;
+	
+	bool IsAttached();
+	void GrabByCrow();
+	void Delete();
+	
 	protected:
 
 	virtual void BeginPlay() override;
@@ -39,4 +58,10 @@ class BEAR_API AScarecrowHat : public AInteractable
 	private:
 
 	UStaticMeshComponent* HatMesh;
+	USphereComponent* BearCollision;
+	UBoxComponent* CrowCollision;
+	
+	bool IsActivated;
+	bool IsAttachedFlag;
+	bool IsGrabbedByCrow;
 };

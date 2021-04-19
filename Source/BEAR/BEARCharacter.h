@@ -19,14 +19,14 @@ class ABEARCharacter : public ACharacter
 
 	public:
 
-	//Animator Interface
+	//Used by Animation Blueprint.
 	//------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MoveDirection;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsDrag;
+	bool IsIK;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector RightHandLocation;
@@ -47,7 +47,7 @@ class ABEARCharacter : public ACharacter
 
 	ABEARCharacter();
 	
-	/** Called for side to side input */
+	//Called for side to side input
 	void MoveRight(float Val);
 	void Interact();
 	void StopInteract();
@@ -56,18 +56,17 @@ class ABEARCharacter : public ACharacter
 	protected:
 
 	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual  void NotifyActorEndOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaSeconds) override;
-
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-	// End of APawn interface
 
 	private:
 
 	float MinWalkSpeed;
 	float MaxWalkSpeed;
+
+	bool IsDrag;
 	
 	TArray<ADraggableObject*> CloseDragObjects;
 	TArray<AInteractable*> CloseInteractables;

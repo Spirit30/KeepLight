@@ -11,7 +11,14 @@ class BEAR_API AInteractable : public AActor
 {
 	GENERATED_BODY()
 	
-	public:	
+	public:
+
+	UPROPERTY(EditAnywhere)
+	bool CanMoveCharacterFlag;
+
+	FVector GetLeftHandLocation() const;
+	FVector GetRightHandLocation() const;
+	bool CanMoveCharacter() const;
 
 	AInteractable();
 	

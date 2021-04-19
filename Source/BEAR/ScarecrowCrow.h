@@ -7,6 +7,7 @@
 #include "BEARCharacter.h"
 #include "LevelSequenceActor.h"
 #include "ScarecrowHat.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "ScarecrowCrow.generated.h"
 
@@ -24,13 +25,19 @@ class BEAR_API AScarecrowCrow : public AActor
 	FName TargetSocketName;
 
 	UPROPERTY(EditAnywhere)
-	float Speed;
+	float MinSpeed;
+	
+	UPROPERTY(EditAnywhere)
+	float SpeedDistCoef;
 
 	UPROPERTY(EditAnywhere)
 	float AttackDelay;
 
 	UPROPERTY(EditAnywhere)
 	AScarecrowHat* Hat;
+
+	UPROPERTY(EditAnywhere)
+	FVector HatOffset = FVector(0, 0, -75);
 
 	UPROPERTY(EditAnywhere)
 	TArray<float> SequenceTimePositions;
@@ -50,6 +57,18 @@ class BEAR_API AScarecrowCrow : public AActor
 	UPROPERTY(EditAnywhere)
 	ALevelSequenceActor* HatSecuence;
 	
+	UPROPERTY(EditAnywhere)
+	FString BearCollisionName;
+
+	UPROPERTY(EditAnywhere)
+	AActor* Death;
+
+	UPROPERTY(EditAnywhere)
+	FVector LeaveDirection = FVector(0, 1000, 1000);
+
+	UPROPERTY(EditAnywhere)
+	float DestroyZ = 2000;
+	
 	//Used by ScarecrowCrow Animation Blueprint
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool IsAttackAnimation;
@@ -62,7 +81,11 @@ class BEAR_API AScarecrowCrow : public AActor
 
 	private:
 
+	USphereComponent* BearCollision;
+	
 	FVector InitialLocation;
+	int32 InitialBearCollisionRadius;
+	
 	float AttackTimer;
 	int32 CurrentHatHit;
 
@@ -88,6 +111,9 @@ class BEAR_API AScarecrowCrow : public AActor
 
 	void OnAttack();
 	void OnHitHat();
+	void OnReturnBack();
+	void OnLeave();
+	void OnDelete();
 
 	void MoveSmoothTo(FVector TargetLocation, float DeltaSeconds);
 	void UpdateRotation(FVector TargetLocation);

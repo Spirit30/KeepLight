@@ -9,10 +9,10 @@
 
 ABEARCharacter::ABEARCharacter()
 {
-	// Set size for collision capsule
+	//Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
-	// Don't rotate when the controller rotates.
+	//Don't rotate when the controller rotates.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -21,7 +21,7 @@ ABEARCharacter::ABEARCharacter()
 	MinWalkSpeed = 120.0f;
 	MaxWalkSpeed = 600.0f;
 
-	// Configure character movement
+	//Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction we are moving..
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->GravityScale = 2.0f; // Default = 2
@@ -35,24 +35,21 @@ ABEARCharacter::ABEARCharacter()
 	SetTickGroup(TG_DuringPhysics);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void ABEARCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
 
 void ABEARCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// set up gameplay key bindings
+	//Set up gameplay key bindings
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABEARCharacter::TryJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABEARCharacter::MoveRight);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ABEARCharacter::Interact);
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ABEARCharacter::StopInteract);
-}
-
-void ABEARCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 void ABEARCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -143,24 +140,46 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 		
 			RightHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->RightHandDragOffset;
 			LeftHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->LeftHandDragOffset;
+			IsIK = true;
 		}
 		else
 		{
 			StopInteract();
 		}
 	}
+	else if(ActiveInteractable)
+	{
+		if(ActiveInteractable->IsInteracting())
+		{
+			RightHandLocation = ActiveInteractable->GetRightHandLocation();
+			LeftHandLocation = ActiveInteractable->GetLeftHandLocation();
+			IsIK = true;
+		}
+		else
+		{
+			StopInteract();
+			ActiveInteractable= nullptr;
+		}
+	}
+	else
+	{
+		IsIK = false;
+	}
 }
 
 void ABEARCharacter::MoveRight(float Value)
 {
-	const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
+	if(!ActiveInteractable || ActiveInteractable->CanMoveCharacter())
+	{
+		const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
 	
-	// add movement in that direction
-	AddMovementInput(MoveDirectionVector, Value);
+		// add movement in that direction
+		AddMovementInput(MoveDirectionVector, Value);
 
-	//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds() * 2, FColor::Magenta, FString::Printf(TEXT("DIR: %f, %f, %f"), GetActorForwardVector().X, GetActorForwardVector().Y, GetActorForwardVector().Z));
-	const float CharacterDirectionCoef = GetActorForwardVector().Y <= 0 ? 1 : -1;
-	MoveDirection = FMath::Sign(Value) * CharacterDirectionCoef;
+		//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds() * 2, FColor::Magenta, FString::Printf(TEXT("DIR: %f, %f, %f"), GetActorForwardVector().X, GetActorForwardVector().Y, GetActorForwardVector().Z));
+		const float CharacterDirectionCoef = GetActorForwardVector().Y <= 0 ? 1 : -1;
+		MoveDirection = FMath::Sign(Value) * CharacterDirectionCoef;
+	}
 }
 
 void ABEARCharacter::Interact()

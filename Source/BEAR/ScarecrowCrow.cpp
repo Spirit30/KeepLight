@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ScarecrowCrow.h"
+
+#include "ToolBuilderUtil.h"
+#include "Util.h"
 #include "Kismet/GameplayStatics.h"
 
 AScarecrowCrow::AScarecrowCrow()
@@ -14,7 +17,10 @@ void AScarecrowCrow::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BearCollision = Cast<USphereComponent>(Util::GetComponentByName(this, USphereComponent::StaticClass(), BearCollisionName));
+
 	InitialLocation = GetActorLocation();
+	InitialBearCollisionRadius = BearCollision->GetUnscaledSphereRadius();
 }
 
 void AScarecrowCrow::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -27,6 +33,11 @@ void AScarecrowCrow::NotifyActorBeginOverlap(AActor* OtherActor)
 
 		case Chase:
 			OnChase(OtherActor);
+			break;
+
+		case Back:
+			OnCalm(OtherActor);
+			OnCalm(0.0f);
 			break;
 
 		default: ;
@@ -53,9 +64,9 @@ void AScarecrowCrow::Tick(float DeltaSeconds)
 			OnBack(DeltaSeconds);
 			break;
 		
-		// case Leave:
-		// 	OnLeave(DeltaSeconds);
-		// 	break;
+		case Leave:
+			OnLeave(DeltaSeconds);
+			break;
 		
 		default: ;
 	}
@@ -69,6 +80,9 @@ inline void AScarecrowCrow::OnCalm(AActor* OtherActor)
 	{
 		AttackTimer = AttackDelay;
 		State = Angry;
+
+		//Sound
+		UGameplayStatics::PlaySoundAtLocation(this, CrowSound, GetActorLocation(), FRotator::ZeroRotator, SoundVolume);
 	}
 }
 
@@ -113,21 +127,27 @@ void AScarecrowCrow::OnBack(float DeltaSeconds)
 
 	if(Dist < BackDistance)
 	{
-		SetActorLocation(InitialLocation);
-		State = Calm;
+		OnReturnBack();
 	}
 }
 
 void AScarecrowCrow::OnLeave(float DeltaSeconds)
 {
+	const auto Location = GetActorLocation() + LeaveDirection + HatOffset;
+	MoveSmoothTo(Location, DeltaSeconds);
+	
+	const auto HatLocation = GetActorLocation() + HatOffset;
+	Hat->SetActorLocation(HatLocation);
+
+	if(Location.Z > DestroyZ)
+	{
+		OnDelete();
+	}
 }
 
 void AScarecrowCrow::OnAttack()
 {
 	State = Chase;
-
-	//Sound
-	UGameplayStatics::PlaySoundAtLocation(this, CrowSound, GetActorLocation(), FRotator::ZeroRotator, SoundVolume);
 }
 
 void AScarecrowCrow::OnHitHat()
@@ -144,18 +164,49 @@ void AScarecrowCrow::OnHitHat()
 	}
 	else
 	{
-		//Play to End
-		HatSecuence->GetSequencePlayer()->Play();
+		if(Hat->IsAttached())
+		{
+			OnLeave();
+		}
+		else
+		{
+			//Play to End
+			HatSecuence->GetSequencePlayer()->Play();
+		}
 	}
 
 	//Sound
 	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation(), FRotator::ZeroRotator, SoundVolume);
+
+	//Reduce collision radius to prevent Bear trigger Chase again.
+	BearCollision->SetSphereRadius(InitialBearCollisionRadius * 0.5f);
+}
+
+void AScarecrowCrow::OnReturnBack()
+{
+	SetActorLocation(InitialLocation);
+	State = Calm;
+
+	BearCollision->SetSphereRadius(InitialBearCollisionRadius);
+}
+
+void AScarecrowCrow::OnLeave()
+{
+	Death->Destroy();
+	Hat->GrabByCrow();
+	State = Leave;
+}
+
+void AScarecrowCrow::OnDelete()
+{
+	Hat->Delete();
+	Destroy();
 }
 
 void AScarecrowCrow::MoveSmoothTo(FVector TargetLocation, float DeltaSeconds)
 {
 	const float Dist = FVector::Dist(GetActorLocation(), TargetLocation);
-	const auto Location = FMath::Lerp(GetActorLocation(), TargetLocation, DeltaSeconds * Speed * Dist);
+	const auto Location = FMath::Lerp(GetActorLocation(), TargetLocation, DeltaSeconds * FMath::Max(MinSpeed, SpeedDistCoef * Dist));
 	SetActorLocation(Location);
 
 	UpdateRotation(TargetLocation);

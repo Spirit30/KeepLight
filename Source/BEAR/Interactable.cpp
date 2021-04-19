@@ -3,6 +3,21 @@
 
 #include "Interactable.h"
 
+FVector AInteractable::GetLeftHandLocation() const
+{
+	return  GetActorLocation();
+}
+
+FVector AInteractable::GetRightHandLocation() const
+{
+	return  GetActorLocation();
+}
+
+bool AInteractable::CanMoveCharacter() const
+{
+	return CanMoveCharacterFlag;
+}
+
 AInteractable::AInteractable()
 {
 	PrimaryActorTick.bCanEverTick = true;
