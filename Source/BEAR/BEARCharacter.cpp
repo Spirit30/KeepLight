@@ -38,7 +38,8 @@ ABEARCharacter::ABEARCharacter()
 void ABEARCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ResetFallingTimer();
 }
 
 void ABEARCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -165,6 +166,18 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 	{
 		IsIK = false;
 	}
+
+	//Fix stack falling
+	if(GetCharacterMovement()->IsFalling())
+	{
+		IsStack = FallingTimer <= 0;	
+		FallingTimer -= DeltaSeconds;
+	}
+}
+
+void ABEARCharacter::Landed(const FHitResult& Hit)
+{
+	ResetFallingTimer();
 }
 
 void ABEARCharacter::MoveRight(float Value)
@@ -215,7 +228,15 @@ void ABEARCharacter::StopInteract()
 
 void ABEARCharacter::TryJump()
 {
-	if(!IsDrag)
+	if(IsStack)
+	{
+		GetCharacterMovement()->AddImpulse(DeStackForce, true);
+			
+		IsStack = false;
+
+		ResetFallingTimer();
+	}
+	else if(!IsDrag)
 	{
 		Jump();
 	}
@@ -254,4 +275,9 @@ bool ABEARCharacter::CanInteract()
 	}
 
 	return false;
+}
+
+void ABEARCharacter::ResetFallingTimer()
+{
+	FallingTimer = MaxFallingTime;
 }

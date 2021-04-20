@@ -45,6 +45,12 @@ class ABEARCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DragDistanceLerpSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxFallingTime = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector DeStackForce = FVector(0, 0, 100000);
+	
 	ABEARCharacter();
 	
 	//Called for side to side input
@@ -58,13 +64,16 @@ class ABEARCharacter : public ACharacter
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	virtual  void NotifyActorEndOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 	private:
 
 	float MinWalkSpeed;
 	float MaxWalkSpeed;
+	float FallingTimer;
+	bool IsStack;
 
 	bool IsDrag;
 	
@@ -73,6 +82,7 @@ class ABEARCharacter : public ACharacter
 
 	bool CanDrag();
 	bool CanInteract();
+	void ResetFallingTimer();
 
 	ADraggableObject* ActiveDragObject;
 	AInteractable* ActiveInteractable;

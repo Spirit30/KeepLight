@@ -12,3 +12,8 @@ void Logger::ToScreen(FString Prefix, float Value, float Duration, FColor Color,
 {
 	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%s %f"), *Prefix, Value));
 }
+
+void Logger::ToScreen(FString Prefix, bool Value, float Duration, FColor Color, int32 Key)
+{
+	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%s %s"), *Prefix, *FString(Value ? "True" : "False")));
+}
