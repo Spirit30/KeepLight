@@ -35,6 +35,29 @@ ABEARCharacter::ABEARCharacter()
 	SetTickGroup(TG_DuringPhysics);
 }
 
+FVector ABEARCharacter::GetHeadLocation() const
+{
+	return GetMesh()->GetSocketLocation("HeadSocket");
+}
+
+bool ABEARCharacter::IsKilled() const
+{
+	return  IsKilledFlag;
+}
+
+void ABEARCharacter::Kill(FVector Point)
+{
+	IsKilledFlag = true;
+	
+	GetMesh()->SetComponentTickEnabled(false);
+	SetActorTickEnabled(false);
+	GetCharacterMovement()->Deactivate();
+	DestroyPlayerInputComponent();
+
+	const auto DeathEffect = GetWorld()->SpawnActor(DeathEffectClass);
+	DeathEffect->SetActorLocation(Point);
+}
+
 void ABEARCharacter::BeginPlay()
 {
 	Super::BeginPlay();

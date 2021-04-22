@@ -46,18 +46,20 @@ class ABEARCharacter : public ACharacter
 	float DragDistanceLerpSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> DeathEffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxFallingTime = 3.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector DeStackForce = FVector(0, 0, 100000);
 	
 	ABEARCharacter();
-	
-	//Called for side to side input
-	void MoveRight(float Val);
-	void Interact();
-	void StopInteract();
-	void TryJump();
+
+	FVector GetHeadLocation() const;
+	bool IsKilled() const;
+	UFUNCTION(BlueprintCallable)
+	void Kill(FVector Point);
 	
 	protected:
 
@@ -76,14 +78,24 @@ class ABEARCharacter : public ACharacter
 	bool IsStack;
 
 	bool IsDrag;
+	bool IsKilledFlag;
 	
 	TArray<ADraggableObject*> CloseDragObjects;
 	TArray<AInteractable*> CloseInteractables;
 
+	//Input interface
+	//------------------------------
+	void MoveRight(float Val);
+	void Interact();
+	void StopInteract();
+	void TryJump();
+	//------------------------------
+
 	bool CanDrag();
 	bool CanInteract();
 	void ResetFallingTimer();
-
+	
+	UInputComponent* InputComponent;
 	ADraggableObject* ActiveDragObject;
 	AInteractable* ActiveInteractable;
 };

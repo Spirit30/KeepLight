@@ -22,9 +22,6 @@ class BEAR_API AScarecrowCrow : public AActor
 	ABEARCharacter* Bear;
 
 	UPROPERTY(EditAnywhere)
-	FName TargetSocketName;
-
-	UPROPERTY(EditAnywhere)
 	float MinSpeed;
 	
 	UPROPERTY(EditAnywhere)
@@ -113,6 +110,7 @@ class BEAR_API AScarecrowCrow : public AActor
 	void OnHitHat();
 	void OnReturnBack();
 	void OnLeave();
+	void OnStop();
 	void OnDelete();
 
 	void MoveSmoothTo(FVector TargetLocation, float DeltaSeconds);

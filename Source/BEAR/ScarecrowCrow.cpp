@@ -46,6 +46,11 @@ void AScarecrowCrow::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void AScarecrowCrow::Tick(float DeltaSeconds)
 {
+	if(Bear->IsKilled())
+	{
+		OnStop();
+	}
+	
 	switch (State)
 	{
 		case Calm:
@@ -115,8 +120,7 @@ void AScarecrowCrow::OnAngry(float DeltaSeconds)
 //Follow Bear
 void AScarecrowCrow::OnChase(float DeltaSeconds)
 {
-	const auto TargetLocation = Bear->GetMesh()->GetSocketLocation(TargetSocketName);
-	MoveSmoothTo(TargetLocation, DeltaSeconds);
+	MoveSmoothTo(Bear->GetHeadLocation(), DeltaSeconds);
 }
 
 void AScarecrowCrow::OnBack(float DeltaSeconds)
@@ -195,6 +199,12 @@ void AScarecrowCrow::OnLeave()
 	Death->Destroy();
 	Hat->GrabByCrow();
 	State = Leave;
+}
+
+void AScarecrowCrow::OnStop()
+{
+	GetComponentByClass(USkeletalMeshComponent::StaticClass())->SetComponentTickEnabled(false);
+	SetActorTickEnabled(false);
 }
 
 void AScarecrowCrow::OnDelete()
