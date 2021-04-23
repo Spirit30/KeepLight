@@ -59,7 +59,7 @@ class ABEARCharacter : public ACharacter
 	FVector GetHeadLocation() const;
 	bool IsKilled() const;
 	UFUNCTION(BlueprintCallable)
-	void Kill(FVector Point);
+	void Kill(bool HasEffect, FVector Point);
 	
 	protected:
 

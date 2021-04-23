@@ -45,7 +45,7 @@ bool ABEARCharacter::IsKilled() const
 	return  IsKilledFlag;
 }
 
-void ABEARCharacter::Kill(FVector Point)
+void ABEARCharacter::Kill(bool HasEffect, FVector Point)
 {
 	IsKilledFlag = true;
 	
@@ -54,8 +54,11 @@ void ABEARCharacter::Kill(FVector Point)
 	GetCharacterMovement()->Deactivate();
 	DestroyPlayerInputComponent();
 
-	const auto DeathEffect = GetWorld()->SpawnActor(DeathEffectClass);
-	DeathEffect->SetActorLocation(Point);
+	if(HasEffect)
+	{
+		const auto DeathEffect = GetWorld()->SpawnActor(DeathEffectClass);
+		DeathEffect->SetActorLocation(Point);
+	}
 }
 
 void ABEARCharacter::BeginPlay()
