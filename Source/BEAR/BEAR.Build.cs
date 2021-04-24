@@ -13,8 +13,7 @@ public class BEAR : ModuleRules
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
-			"InputCore", 
-			"CinematicCamera", 
+			"InputCore",
 			"LevelSequence",
 			"MovieScene"
 		});
