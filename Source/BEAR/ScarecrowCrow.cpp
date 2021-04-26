@@ -76,6 +76,8 @@ void AScarecrowCrow::Tick(float DeltaSeconds)
 	}
 	
 	IsAttackAnimation = State > Calm;
+
+	TrySetPassed();
 }
 
 inline void AScarecrowCrow::OnCalm(AActor* OtherActor)
@@ -233,5 +235,16 @@ void AScarecrowCrow::UpdateRotation(FVector TargetLocation)
 	{
 		const auto LookRight = FRotator(0, 180, 0);
 		SetActorRotation(LookRight);
+	}
+}
+
+void AScarecrowCrow::TrySetPassed()
+{
+	const auto Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	const auto NextControlPointBlockingBox = Cast<UBoxComponent>(Util::GetComponentByName(NextControlPoint, UBoxComponent::StaticClass(), "BlockingBox"));
+
+	if(Character->GetActorLocation().Y <  NextControlPointBlockingBox->GetComponentLocation().Y)
+	{
+		OnDelete();
 	}
 }

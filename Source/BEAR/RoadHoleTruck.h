@@ -4,13 +4,11 @@
 
 #include "CoreMinimal.h"
 
-
 #include "BEARCharacter.h"
 #include "DraggableObject.h"
 #include "LevelSequenceActor.h"
 #include "Components/ActorComponent.h"
 #include "RoadHoleTruck.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEAR_API URoadHoleTruck : public UActorComponent
@@ -48,9 +46,6 @@ class BEAR_API URoadHoleTruck : public UActorComponent
 
 	UPROPERTY(EditAnywhere)
 	float PassY;
-	
-	UPROPERTY(EditAnywhere)
-	float SetPassedInitialDelay;
 	
 	URoadHoleTruck();
 
