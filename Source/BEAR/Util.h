@@ -13,4 +13,5 @@ class BEAR_API Util
 	
 	static TArray<UActorComponent*> GetComponentsByName(AActor* Actor, TSubclassOf<UActorComponent> ComponentClass, FString Name);
 	static UActorComponent* GetComponentByName(AActor* Actor, TSubclassOf<UActorComponent> ComponentClass, FString Name);
+	static bool IsFloor(AActor* Actor);
 };

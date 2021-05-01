@@ -33,6 +33,11 @@ bool AInteractable::IsInteracting() const
 	return IsInteractingFlag;
 }
 
+float AInteractable::GetDragDot() const
+{
+	return DragDot;
+}
+
 void AInteractable::Interact()
 {
 	IsInteractingFlag = true;

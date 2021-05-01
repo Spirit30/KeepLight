@@ -61,6 +61,16 @@ void ABEARCharacter::Kill(bool HasEffect, FVector Point)
 	}
 }
 
+bool ABEARCharacter::IsPush() const
+{
+	return IsDrag && MoveDirection > 0;
+}
+
+bool ABEARCharacter::IsPull() const
+{
+	return IsDrag && MoveDirection <= 0;
+}
+
 void ABEARCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -126,47 +136,10 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 
 		if(CanDrag())
 		{
-			const auto ActiveDragComponent = ActiveDragObject->GetStaticMeshComponent();
-		
-			//Push
-			if(MoveDirection > 0)
-			{
-				ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
-			
-				const float PushVelocity = ActiveDragComponent->GetComponentVelocity().SizeSquared();
+			ActiveDragObject->Drag(DeltaSeconds);
 
-				//GEngine->AddOnScreenDebugMessage(-1, DeltaSeconds * 2, FColor::Magenta, FString::Printf(TEXT("Velocity: %f"), PushVelocity));
-		
-				const float DragForce = 
-                        //Bigger Dist means smaller Push Forces
-                        FMath::Lerp(
-                            ActiveDragObject->MaxPushForce,
-                            ActiveDragObject->MinPushForce,
-                            FMath::Clamp(PushVelocity, ActiveDragObject->MinPushVelocity, ActiveDragObject->MaxPushVelocity) / ActiveDragObject->MaxPushVelocity);
-
-				const auto Force = GetActorForwardVector() * DragForce * DeltaSeconds;
-				ActiveDragComponent->AddForceAtLocation(Force, ActiveDragObject->GetActorLocation());
-			}
-			//Pull
-			else
-			{
-				ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			
-				auto TargetDragLocation = GetActorLocation() + GetActorForwardVector() * ActiveDragObject->PullDistance;
-				//Locked 2D
-				TargetDragLocation.X = 0;
-				//Controlled by Physics
-				TargetDragLocation.Z = ActiveDragObject->GetActorLocation().Z;
-			
-				auto DragLocation = FMath::Lerp(ActiveDragObject->GetActorLocation(), TargetDragLocation, DeltaSeconds * DragDistanceLerpSpeed);
-				//Locked 2D
-				DragLocation.X = 0;
-			
-				ActiveDragObject->SetActorLocation(DragLocation);
-			}
-		
-			RightHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->RightHandDragOffset;
-			LeftHandLocation = ActiveDragComponent->GetComponentLocation() + ActiveDragObject->LeftHandDragOffset;
+			RightHandLocation = ActiveDragObject->GetRightHandLocation();
+			LeftHandLocation = ActiveDragObject->GetLeftHandLocation();
 			IsIK = true;
 		}
 		else
@@ -240,12 +213,10 @@ void ABEARCharacter::StopInteract()
 {
 	if(IsDrag)
 	{
-		const auto ActiveDragComponent = ActiveDragObject->GetStaticMeshComponent();
-		
+		ActiveDragObject->StopDrag();
+
 		GetCharacterMovement()->MaxWalkSpeed = 	MaxWalkSpeed;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-
-		ActiveDragComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 
 		IsDrag = false;
 		ActiveDragObject = nullptr;
@@ -272,9 +243,7 @@ bool ABEARCharacter::CanDrag()
 {
 	for(auto PotentialDragObject : CloseDragObjects)
 	{
-		const auto Direction = (PotentialDragObject->GetActorLocation() - GetActorLocation()).GetUnsafeNormal();
-		
-		if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0.75f)
+		if(PotentialDragObject->CanDrag())
 		{
 			ActiveDragObject = PotentialDragObject;
 			return true;
@@ -292,7 +261,7 @@ bool ABEARCharacter::CanInteract()
 		{
 			const auto Direction = (PotentialInteractable->GetActorLocation() - GetActorLocation()).GetUnsafeNormal();
 		
-			if(FVector::DotProduct(GetActorForwardVector(), Direction) > 0.75f)
+			if(FVector::DotProduct(GetActorForwardVector(), Direction) > PotentialInteractable->GetDragDot())
 			{
 				ActiveInteractable = PotentialInteractable;
 				return true;

@@ -34,7 +34,7 @@ class BEAR_API ADynamicObject : public AActor
 	
 	ADynamicObject();
 
-	UStaticMeshComponent* GetStaticMeshComponent();
+	UStaticMeshComponent* GetStaticMeshComponent() const;
 
 	protected:
 
@@ -45,7 +45,7 @@ class BEAR_API ADynamicObject : public AActor
 	UStaticMeshComponent* StaticMeshComponent;
 
 	private:
-
+	
 	float LastHitSoundTime;
 
 	bool IsFalling() const;

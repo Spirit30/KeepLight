@@ -26,3 +26,8 @@ UActorComponent* Util::GetComponentByName(AActor* Actor, TSubclassOf<UActorCompo
 
 	return components.Num() > 0 ? components[0] : nullptr;
 }
+
+bool Util::IsFloor(AActor* Actor)
+{
+	return Actor->Tags.Contains("Floor");
+}

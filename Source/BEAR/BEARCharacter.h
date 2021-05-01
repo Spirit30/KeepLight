@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 
-
 #include "DraggableObject.h"
 #include "Interactable.h"
 #include "GameFramework/Character.h"
-
 
 #include "BEARCharacter.generated.h"
 
@@ -43,9 +41,6 @@ class ABEARCharacter : public ACharacter
 	//------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DragDistanceLerpSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> DeathEffectClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -60,6 +55,9 @@ class ABEARCharacter : public ACharacter
 	bool IsKilled() const;
 	UFUNCTION(BlueprintCallable)
 	void Kill(bool HasEffect, FVector Point);
+	bool IsPush() const;
+	bool IsPull() const;
+	void StopInteract();
 	
 	protected:
 
@@ -87,7 +85,6 @@ class ABEARCharacter : public ACharacter
 	//------------------------------
 	void MoveRight(float Val);
 	void Interact();
-	void StopInteract();
 	void TryJump();
 	//------------------------------
 

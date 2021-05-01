@@ -16,6 +16,9 @@ class BEAR_API AInteractable : public AActor
 	UPROPERTY(EditAnywhere)
 	bool CanMoveCharacterFlag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DragDot = 0.75f;
+	
 	FVector GetLeftHandLocation() const;
 	FVector GetRightHandLocation() const;
 	bool CanMoveCharacter() const;
@@ -24,6 +27,7 @@ class BEAR_API AInteractable : public AActor
 	
 	bool CanInteract() const;
 	bool IsInteracting() const;
+	float GetDragDot() const;
 	virtual void Interact();
 	virtual void StopInteract();
 	

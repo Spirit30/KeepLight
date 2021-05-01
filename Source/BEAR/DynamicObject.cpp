@@ -12,7 +12,7 @@ ADynamicObject::ADynamicObject()
 	SetTickGroup(TG_DuringPhysics);
 }
 
-UStaticMeshComponent* ADynamicObject::GetStaticMeshComponent()
+UStaticMeshComponent* ADynamicObject::GetStaticMeshComponent() const
 {
 	return StaticMeshComponent;
 }
@@ -39,6 +39,8 @@ void ADynamicObject::Tick(float DeltaTime)
 
 void ADynamicObject::NotifyHit(UPrimitiveComponent* Comp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
+	Super::NotifyHit(Comp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+	
 	// if(Other)
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Cyan, FString::Printf(TEXT("HIT: %s, IMPULSE: %f"), *Other->GetName(), NormalImpulse.SizeSquared()));
