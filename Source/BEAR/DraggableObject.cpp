@@ -3,7 +3,9 @@
 #include "DraggableObject.h"
 
 #include "BEARCharacter.h"
+#include "Logger.h"
 #include "Components/AudioComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -11,22 +13,11 @@ ADraggableObject::ADraggableObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetTickGroup(TG_PostUpdateWork);
+	SetTickGroup(TG_PrePhysics);
 }
 
 void ADraggableObject::Drag(float DeltaSeconds)
 {
-	if(!IsDrag)
-	{
-		if(DragSound)
-		{
-			AudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, DragSound, GetActorLocation());
-			AudioComponent->SetVolumeMultiplier(DragSoundVolume);
-			AudioComponent->SetActive(true);
-			AudioComponent->Play();
-		}
-	}
-	
 	IsDrag = true;
 
 	//DragPivot Calculated once per Tick for optimization
@@ -34,45 +25,46 @@ void ADraggableObject::Drag(float DeltaSeconds)
 
 	const auto Bear = Cast<ABEARCharacter>(BEAR);
 	
-	auto Force = 0;
-	
+	//Find Force depending on Dist
+	Logger::DrawLine(GetWorld(), DragPivot, Bear->GetActorLocation(), DeltaSeconds);
+	const float Dist = FVector::Dist(DragPivot, Bear->GetActorLocation());
+	FVector Force;
+
+	//Push
 	if(Bear->IsPush())
 	{
-		Force = PushForce;
-	}
-	else if(Bear->IsPull())
-	{
-		Force = PullForce;
-	}
-	
-	GetStaticMeshComponent()->AddForce(BEAR->GetActorForwardVector() * DeltaSeconds * Force * Bear->MoveDirection, NAME_None, true);
+		const float ForceAlpha = Dist / MaxDragDist;
+		const float ForceAlphaClamped = ForceAlpha > 1.0f ? 1.0f : ForceAlpha;
+		const float ForceAmount = FMath::Lerp(MaxDragForce, 0.0f, ForceAlphaClamped);
 
-	// const auto DragPivotOffset = GetActorLocation() - DragPivot;
-	// const float DragDist = Cast<ABEARCharacter>(BEAR)->IsPush() ? PushDistance : PullDistance;
-	// 			
-	// auto TargetDragLocation = BEAR->GetActorLocation() + DragPivotOffset + BEAR->GetActorForwardVector() * DragDist;
-	// //Locked 2D
-	// TargetDragLocation.X = 0;
-	// //Controlled by Physics
-	// TargetDragLocation.Z = GetActorLocation().Z;
-	// 		
-	// auto DragLocation = FMath::Lerp(GetActorLocation(), TargetDragLocation, DeltaSeconds * DragDistanceLerpSpeed);
-	// //Locked 2D
-	// DragLocation.X = 0;
-	// //Controlled by Physics
-	// DragLocation.Z = GetActorLocation().Z;
-	//
-	// SetLocation(DragLocation);
+		const FVector ForceDirection = (DragPivot - Bear->GetActorLocation()).GetUnsafeNormal();
+		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
+		Force = FVector(0, ForceAmount * ForceDirectionY, 0) + Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
+
+		const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.Y: %f"), Dist, ForceAlphaClamped, Force.Y);
+		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
+	}
+	//Pull
+	else
+	{
+		const float ForceAlpha = Dist / MaxDragDist;
+		const float ForceAlphaClamped = ForceAlpha > MaxDragDist ? MaxDragDist : ForceAlpha;
+		const float ForceAmount = FMath::Lerp(0.0f, MaxDragForce, ForceAlphaClamped);
+
+		const FVector ForceDirection = (Bear->GetActorLocation() - DragPivot).GetUnsafeNormal();
+		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
+		Force = FVector(0, ForceAmount * ForceDirectionY, 0) - Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
+		
+		const FString Output = FString::Printf(TEXT("PULL Dist: %f Dist Alpha: %f  Force.Y: %f"), Dist, ForceAlphaClamped, Force.Y);
+		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
+	}
+
+	GetStaticMeshComponent()->AddForce(Force, NAME_None, true);
 }
 
 void ADraggableObject::StopDrag()
 {
 	IsDrag = false;
-
-	if(AudioComponent)
-	{
-		AudioComponent->DestroyComponent();
-	}
 }
 
 FVector ADraggableObject::GetRightHandLocation() const
@@ -124,11 +116,6 @@ FVector ADraggableObject::CalculateDragPivot() const
 	}
 	
 	return StaticMesh->GetComponentLocation();
-
-	//Alternative method
-	// FVector OutPointOnBody;
-	// GetStaticMeshComponent()->GetClosestPointOnCollision(BEAR->GetActorLocation(), OutPointOnBody);
-	// return OutPointOnBody;
 }
 
 void ADraggableObject::SetLocation(FVector Location)
@@ -145,72 +132,27 @@ void ADraggableObject::MoveBack()
 	}
 }
 
-// void ADraggableObject::UpdateBoxCollision()
-// {
-// 	BoxCollision->SetWorldLocation(GetActorLocation() + BoxCollisionInitialOffset);
-// 	BoxCollision->SetWorldRotation(FRotator::ZeroRotator);
-// }
-
 void ADraggableObject::BeginPlay()
 {
 	Super::BeginPlay();
 
 	BEAR = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	// BoxCollision = Cast<UBoxComponent>(Util::GetComponentByName(this, UBoxComponent::StaticClass(), "BoxCollision"));
-	// BoxCollisionInitialOffset = BoxCollision->GetRelativeLocation();
 
-	//UpdateBoxCollision();
+	if(DragSound)
+	{
+		AudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, DragSound, GetActorLocation());
+		const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, false);
+		AudioComponent->AttachToComponent(GetStaticMeshComponent(), AttachmentTransformRules);
+	}
 }
-
-// void ADraggableObject::NotifyActorBeginOverlap(AActor* OtherActor)
-// {
-// 	Super::NotifyActorBeginOverlap(OtherActor);
-//
-// 	if(Util::IsFloor(OtherActor))
-// 	{
-// 		FloorActors.Add(OtherActor);
-// 	}
-// }
-//
-// void ADraggableObject::NotifyActorEndOverlap(AActor* OtherActor)
-// {
-// 	Super::NotifyActorEndOverlap(OtherActor);
-//
-// 	if(Util::IsFloor(OtherActor))
-// 	{
-// 		FloorActors.Remove(OtherActor);
-// 	}
-// }
-
-// void ADraggableObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
-// {
-// 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-//
-// 	if(IsDrag)
-// 	{
-// 		const auto Bear = Cast<ABEARCharacter>(BEAR);
-// 		
-// 		//Character
-// 		if(Other == BEAR && Bear->IsPull())
-// 		{
-// 			MoveBack();
-// 		}
-// 		//Obstacle
-// 		else if(Obstacles.Contains(Other) && Bear->IsPush())
-// 		{
-// 			MoveBack();
-// 		}
-// 	}
-// }
 
 void ADraggableObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// UpdateBoxCollision();
-	//
-	// if(IsDrag && FloorActors.Num() == 0)
-	// {
-	// 	Cast<ABEARCharacter>(BEAR)->StopInteract();
-	// }
+	if(AudioComponent)
+	{
+		const float Velocity = GetStaticMeshComponent()->GetComponentVelocity().SizeSquared();
+		AudioComponent->SetVolumeMultiplier(Velocity > DragSoundVelocity ? DragSoundVolume : 0.0f);
+	}
 }

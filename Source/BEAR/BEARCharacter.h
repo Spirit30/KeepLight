@@ -48,6 +48,8 @@ class ABEARCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector DeStackForce = FVector(0, 0, 100000);
+
+	int32 InputDirection;
 	
 	ABEARCharacter();
 

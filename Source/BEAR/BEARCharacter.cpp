@@ -32,7 +32,7 @@ ABEARCharacter::ABEARCharacter()
 	GetCharacterMovement()->MaxFlySpeed = 600.0f;
 
 	//Tick Group
-	SetTickGroup(TG_DuringPhysics);
+	SetTickGroup(TG_PrePhysics);
 }
 
 FVector ABEARCharacter::GetHeadLocation() const
@@ -183,6 +183,8 @@ void ABEARCharacter::MoveRight(float Value)
 {
 	if(!ActiveInteractable || ActiveInteractable->CanMoveCharacter())
 	{
+		InputDirection = Value;
+		
 		const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
 	
 		// add movement in that direction

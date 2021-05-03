@@ -9,7 +9,7 @@ ADynamicObject::ADynamicObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	SetTickGroup(TG_DuringPhysics);
+	SetTickGroup(TG_PrePhysics);
 }
 
 UStaticMeshComponent* ADynamicObject::GetStaticMeshComponent() const
