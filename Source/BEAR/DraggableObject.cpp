@@ -29,19 +29,19 @@ void ADraggableObject::Drag(float DeltaSeconds)
 	Logger::DrawLine(GetWorld(), DragPivot, Bear->GetActorLocation(), DeltaSeconds);
 	const float Dist = FVector::Dist(DragPivot, Bear->GetActorLocation());
 	FVector Force;
-
+	
 	//Push
 	if(Bear->IsPush())
 	{
 		const float ForceAlpha = Dist / MaxDragDist;
 		const float ForceAlphaClamped = ForceAlpha > 1.0f ? 1.0f : ForceAlpha;
 		const float ForceAmount = FMath::Lerp(MaxDragForce, 0.0f, ForceAlphaClamped);
-
+	
 		const FVector ForceDirection = (DragPivot - Bear->GetActorLocation()).GetUnsafeNormal();
 		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
 		Force = FVector(0, ForceAmount * ForceDirectionY, 0) + Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
-
-		const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.Y: %f"), Dist, ForceAlphaClamped, Force.Y);
+	
+		const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
 		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
 	}
 	//Pull
@@ -50,15 +50,15 @@ void ADraggableObject::Drag(float DeltaSeconds)
 		const float ForceAlpha = Dist / MaxDragDist;
 		const float ForceAlphaClamped = ForceAlpha > MaxDragDist ? MaxDragDist : ForceAlpha;
 		const float ForceAmount = FMath::Lerp(0.0f, MaxDragForce, ForceAlphaClamped);
-
+	
 		const FVector ForceDirection = (Bear->GetActorLocation() - DragPivot).GetUnsafeNormal();
 		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
 		Force = FVector(0, ForceAmount * ForceDirectionY, 0) - Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
 		
-		const FString Output = FString::Printf(TEXT("PULL Dist: %f Dist Alpha: %f  Force.Y: %f"), Dist, ForceAlphaClamped, Force.Y);
+		const FString Output = FString::Printf(TEXT("PULL Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
 		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
 	}
-
+	
 	GetStaticMeshComponent()->AddForce(Force, NAME_None, true);
 }
 
