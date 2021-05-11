@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 ADraggableObject::ADraggableObject()
 {
@@ -118,20 +119,6 @@ FVector ADraggableObject::CalculateDragPivot() const
 	return StaticMesh->GetComponentLocation();
 }
 
-void ADraggableObject::SetLocation(FVector Location)
-{
-	PreviousLocation = GetActorLocation();
-	SetActorLocation(Location);
-}
-
-void ADraggableObject::MoveBack()
-{
-	if(PreviousLocation != FVector::ZeroVector)
-	{
-		SetActorLocation(PreviousLocation);
-	}
-}
-
 void ADraggableObject::BeginPlay()
 {
 	Super::BeginPlay();
@@ -144,6 +131,24 @@ void ADraggableObject::BeginPlay()
 		const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, false);
 		AudioComponent->AttachToComponent(GetStaticMeshComponent(), AttachmentTransformRules);
 	}
+
+	OriginPhysicsMaterial = GetStaticMeshComponent()->GetBodyInstance()->GetSimplePhysicalMaterial();
+}
+
+void ADraggableObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if(ReplcePhysicsMaterialsActors.Contains(Other))
+	{
+		const auto Index = ReplcePhysicsMaterialsActors.IndexOfByKey(Other);
+		const auto ReplacePhysicsMaterial = ReplcePhysicsMaterials[Index];
+		TrySetPhysMaterial(ReplacePhysicsMaterial);
+	}
+	else if(Other != UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		TrySetPhysMaterial(OriginPhysicsMaterial);
+	}
 }
 
 void ADraggableObject::Tick(float DeltaTime)
@@ -154,5 +159,13 @@ void ADraggableObject::Tick(float DeltaTime)
 	{
 		const float Velocity = GetStaticMeshComponent()->GetComponentVelocity().SizeSquared();
 		AudioComponent->SetVolumeMultiplier(Velocity > DragSoundVelocity ? DragSoundVolume : 0.0f);
+	}
+}
+
+void ADraggableObject::TrySetPhysMaterial(UPhysicalMaterial* PhysicsMaterial)
+{
+	if(GetStaticMeshComponent()->GetBodyInstance()->GetSimplePhysicalMaterial() != PhysicsMaterial)
+	{
+		GetStaticMeshComponent()->SetPhysMaterialOverride(PhysicsMaterial);
 	}
 }

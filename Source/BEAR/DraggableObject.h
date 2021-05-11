@@ -50,6 +50,12 @@ class BEAR_API ADraggableObject : public ADynamicObject
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DragSoundVelocity = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	TArray<AActor*> ReplcePhysicsMaterialsActors;
+	
+	UPROPERTY(EditAnywhere)
+	TArray<UPhysicalMaterial*> ReplcePhysicsMaterials;
 	
 	ADraggableObject();
 
@@ -62,18 +68,18 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	protected:
 
 	virtual void BeginPlay() override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void Tick(float DeltaTime) override;
 	
 	private:
 
 	AActor* BEAR;
 	UAudioComponent* AudioComponent;
+	UPhysicalMaterial* OriginPhysicsMaterial;
 	
 	FVector DragPivot;
-	FVector PreviousLocation;
 	bool IsDrag;
 
 	FVector CalculateDragPivot() const;
-	void SetLocation(FVector Location);
-	void MoveBack();
+	void TrySetPhysMaterial(UPhysicalMaterial* PhysicsMaterial);
 };
