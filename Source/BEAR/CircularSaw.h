@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 
+#include "DraggableObject.h"
 #include "StackObjectRemover.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "CircularSaw.generated.h"
 
@@ -19,6 +21,12 @@ class BEAR_API ACircularSaw : public AActor
 	AStackObjectRemover* WoodenDeckRemover;
 
 	UPROPERTY(EditAnywhere)
+	AStackObjectRemover* WoodenDeckMover;
+
+	UPROPERTY(EditAnywhere)
+	AStackObjectRemover* RockMover;
+	
+	UPROPERTY(EditAnywhere)
 	AActor* CollisionOfChildActorHolder;
 
 	UPROPERTY(EditAnywhere)
@@ -27,6 +35,20 @@ class BEAR_API ACircularSaw : public AActor
 	UPROPERTY(EditAnywhere)
 	FRotator RotationSpeed = FRotator(300.0f, 0.0f, 0.0f);
 
+	UPROPERTY(EditAnywhere)
+	ADraggableObject* WoodenPlankDraggable;
+
+	UPROPERTY(EditAnywhere)
+	TArray<AActor*> WoodenPlankStaticActors;
+
+	UPROPERTY(EditAnywhere)
+	float RemoveWoodenDeckTimer = 2.0f;
+
+	UPROPERTY(EditAnywhere)
+	AActor* Death;
+	
+	FTimerHandle RemoveWoodenDeckTimerHandle;
+	
 	ACircularSaw();
 
 	void Activate(bool flag);
@@ -34,6 +56,7 @@ class BEAR_API ACircularSaw : public AActor
 	protected:
 
 	virtual void BeginPlay() override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaTime) override;
 
 	private:
@@ -41,4 +64,10 @@ class BEAR_API ACircularSaw : public AActor
 	UStaticMeshComponent* CollisionOfChildActor;
 	
 	bool IsActive;
+	USphereComponent* DeathCollision;
+
+	void ApearWoodenPlanks();
+
+	UFUNCTION()
+	void DisapearWoodenDeck();
 };

@@ -15,6 +15,11 @@ void AStackObjectRemover::StartRemove()
 	SetTargetActorPhysicsEnabled(false);
 }
 
+bool AStackObjectRemover::IsActive() const
+{
+	return PathPointIndex < ActorRemovePath.Num();
+}
+
 void AStackObjectRemover::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,7 +33,7 @@ void AStackObjectRemover::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if(OtherActor == ActorToRemove)
+	if(ActorToRemove && OtherActor == ActorToRemove)
 	{
 		StartRemove();
 	}
@@ -38,7 +43,7 @@ void AStackObjectRemover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(PathPointIndex < ActorRemovePath.Num())
+	if(ActorToRemove && IsActive())
 	{
 		const auto PathPoint = ActorRemovePath[PathPointIndex];
 		const auto Location = FMath::Lerp(ActorToRemove->GetActorLocation(), PathPoint, DeltaTime * RemoveSpeed);

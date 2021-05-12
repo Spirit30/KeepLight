@@ -3,7 +3,7 @@
 
 #include "CircularSaw.h"
 
-#include "Util.h"
+#include "DraggableObject.h"
 
 ACircularSaw::ACircularSaw()
 {
@@ -14,8 +14,9 @@ void ACircularSaw::Activate(bool flag)
 {
 	IsActive = flag;
 
-	SetActorRelativeLocation(flag ? ActiveOffset : FVector::ZeroVector);
-	CollisionOfChildActor->SetCollisionResponseToAllChannels(flag ? ECR_Block : ECR_Ignore);
+	SetActorRelativeLocation(IsActive ? ActiveOffset : FVector::ZeroVector);
+	CollisionOfChildActor->SetCollisionResponseToAllChannels(IsActive ? ECR_Block : ECR_Ignore);
+	DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
 
 	if(IsActive)
 	{
@@ -28,6 +29,25 @@ void ACircularSaw::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionOfChildActor = Cast<UStaticMeshComponent>(CollisionOfChildActorHolder->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	DeathCollision = Cast<USphereComponent>(Death->GetComponentByClass(USphereComponent::StaticClass()));
+}
+
+void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if(IsActive && OtherActor == WoodenDeckMover->ActorToRemove)
+	{
+		const auto WoodenDeck = Cast<ADraggableObject>(OtherActor);
+
+		if(WoodenDeck->IsDrag())
+		{
+			ApearWoodenPlanks();
+			RockMover->StartRemove();
+			WoodenDeckMover->StartRemove();
+			GetWorld()->GetTimerManager().SetTimer(RemoveWoodenDeckTimerHandle, this, &ACircularSaw::DisapearWoodenDeck, RemoveWoodenDeckTimer, false);
+		}
+	}
 }
 
 void ACircularSaw::Tick(float DeltaTime)
@@ -38,5 +58,23 @@ void ACircularSaw::Tick(float DeltaTime)
 	{
 		AddActorLocalRotation(RotationSpeed * DeltaTime);
 	}
+}
+
+void ACircularSaw::ApearWoodenPlanks()
+{
+	for(const auto WoodenPlankActor : WoodenPlankStaticActors)
+	{
+		const auto WoodenPlankMesh = Cast<UStaticMeshComponent>(WoodenPlankActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+		WoodenPlankMesh->SetHiddenInGame(false);
+	}
+
+	const auto WoodenPlankMesh = WoodenPlankDraggable->GetStaticMeshComponent();
+	WoodenPlankMesh->SetHiddenInGame(false);
+	WoodenPlankMesh->SetSimulatePhysics(true);
+}
+
+void ACircularSaw::DisapearWoodenDeck()
+{
+	WoodenDeckMover->ActorToRemove->Destroy();
 }
 

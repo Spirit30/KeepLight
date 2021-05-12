@@ -19,7 +19,7 @@ ADraggableObject::ADraggableObject()
 
 void ADraggableObject::Drag(float DeltaSeconds)
 {
-	IsDrag = true;
+	IsDragFlag = true;
 
 	//DragPivot Calculated once per Tick for optimization
 	DragPivot = CalculateDragPivot();
@@ -65,7 +65,7 @@ void ADraggableObject::Drag(float DeltaSeconds)
 
 void ADraggableObject::StopDrag()
 {
-	IsDrag = false;
+	IsDragFlag = false;
 }
 
 FVector ADraggableObject::GetRightHandLocation() const
@@ -82,6 +82,11 @@ bool ADraggableObject::CanDrag() const
 {
 	const auto DirectionFromBearToThis = (GetActorLocation() - BEAR->GetActorLocation()).GetUnsafeNormal();
 	return  FVector::DotProduct(BEAR->GetActorForwardVector(), DirectionFromBearToThis) > DragDot;
+}
+
+bool ADraggableObject::IsDrag() const
+{
+	return IsDragFlag;
 }
 
 FVector ADraggableObject::CalculateDragPivot() const

@@ -28,6 +28,7 @@ class BEAR_API AStackObjectRemover : public AActor
 	
 	AStackObjectRemover();
 	void StartRemove();
+	bool IsActive() const;
 
 	protected:
 

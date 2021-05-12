@@ -64,6 +64,7 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	FVector GetRightHandLocation() const;
 	FVector GetLeftHandLocation() const;
 	bool CanDrag() const;
+	bool IsDrag() const;
 
 	protected:
 
@@ -78,7 +79,7 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	UPhysicalMaterial* OriginPhysicsMaterial;
 	
 	FVector DragPivot;
-	bool IsDrag;
+	bool IsDragFlag;
 
 	FVector CalculateDragPivot() const;
 	void TrySetPhysMaterial(UPhysicalMaterial* PhysicsMaterial);
