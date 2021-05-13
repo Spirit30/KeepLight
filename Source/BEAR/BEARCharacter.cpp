@@ -3,6 +3,7 @@
 #include "BEARCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "Logger.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -176,6 +177,8 @@ void ABEARCharacter::Tick(float DeltaSeconds)
 
 void ABEARCharacter::Landed(const FHitResult& Hit)
 {
+	Super::Landed(Hit);
+	
 	ResetFallingTimer();
 }
 

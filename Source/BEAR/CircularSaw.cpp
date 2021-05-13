@@ -20,7 +20,14 @@ void ACircularSaw::Activate(bool flag)
 
 	if(IsActive)
 	{
-		WoodenDeckRemover->StartRemove();
+		const auto WoodenDeck = Cast<ADraggableObject>(WoodenDeckRemover->ActorToRemove);
+		
+		const float Dist = FVector::Dist(GetActorLocation(), WoodenDeck->GetStaticMeshComponent()->GetCenterOfMass());
+
+		if(Dist < RemoveWoodenDeckDistance)
+		{
+			WoodenDeckRemover->StartRemove();
+		}
 	}
 }
 

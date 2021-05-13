@@ -42,6 +42,9 @@ class BEAR_API ACircularSaw : public AActor
 	TArray<AActor*> WoodenPlankStaticActors;
 
 	UPROPERTY(EditAnywhere)
+	float RemoveWoodenDeckDistance = 300.0f;
+	
+	UPROPERTY(EditAnywhere)
 	float RemoveWoodenDeckTimer = 2.0f;
 
 	UPROPERTY(EditAnywhere)
