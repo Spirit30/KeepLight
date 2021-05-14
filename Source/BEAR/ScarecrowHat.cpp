@@ -29,8 +29,8 @@ void AScarecrowHat::BeginPlay()
 	Super::BeginPlay();
 
 	HatMesh = Cast<UStaticMeshComponent>(HatMeshActor->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-	BearCollision = Cast<USphereComponent>(Util::GetComponentByName(this, USphereComponent::StaticClass(), BearTriggerName));
-	CrowCollision = Cast<UBoxComponent>(Util::GetComponentByName(this, UBoxComponent::StaticClass(), CrowTriggerName));
+	BearCollision = Cast<USphereComponent>(Util::GetComponentByName(this, BearTriggerName));
+	CrowCollision = Cast<UBoxComponent>(Util::GetComponentByName(this, CrowTriggerName));
 
 	//Tick Group
 	SetTickGroup(TG_PostUpdateWork);

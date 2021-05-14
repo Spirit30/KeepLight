@@ -3,7 +3,9 @@
 
 #include "Util.h"
 
-TArray<UActorComponent*> Util::GetComponentsByName(AActor* Actor, TSubclassOf<UActorComponent> ComponentClass, FString Name)
+#include "Chaos/AABB.h"
+
+TArray<UActorComponent*> Util::GetComponentsByName(AActor* Actor, FString Name)
 {
 	TArray<UActorComponent*> result;
 
@@ -20,11 +22,16 @@ TArray<UActorComponent*> Util::GetComponentsByName(AActor* Actor, TSubclassOf<UA
 	return result;
 }
 
-UActorComponent* Util::GetComponentByName(AActor* Actor, TSubclassOf<UActorComponent> ComponentClass, FString Name)
+UActorComponent* Util::GetComponentByName(AActor* Actor, FString Name)
 {
-	TArray<UActorComponent*> components = GetComponentsByName(Actor, ComponentClass, Name);
+	TArray<UActorComponent*> components = GetComponentsByName(Actor, Name);
 
 	return components.Num() > 0 ? components[0] : nullptr;
+}
+
+UStaticMeshComponent* Util::GetStaticMeshComponentByName(AActor* Actor, FString Name)
+{
+	return Cast<UStaticMeshComponent>(GetComponentByName(Actor, Name));
 }
 
 bool Util::IsFloor(AActor* Actor)

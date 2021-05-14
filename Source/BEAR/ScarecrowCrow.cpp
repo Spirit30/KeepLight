@@ -16,7 +16,7 @@ void AScarecrowCrow::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BearCollision = Cast<USphereComponent>(Util::GetComponentByName(this, USphereComponent::StaticClass(), BearCollisionName));
+	BearCollision = Cast<USphereComponent>(Util::GetComponentByName(this, BearCollisionName));
 
 	InitialLocation = GetActorLocation();
 	InitialBearCollisionRadius = BearCollision->GetUnscaledSphereRadius();
@@ -241,7 +241,7 @@ void AScarecrowCrow::UpdateRotation(FVector TargetLocation)
 void AScarecrowCrow::TrySetPassed()
 {
 	const auto Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	const auto NextControlPointBlockingBox = Cast<UBoxComponent>(Util::GetComponentByName(NextControlPoint, UBoxComponent::StaticClass(), "BlockingBox"));
+	const auto NextControlPointBlockingBox = Cast<UBoxComponent>(Util::GetComponentByName(NextControlPoint, "BlockingBox"));
 
 	if(Character->GetActorLocation().Y <  NextControlPointBlockingBox->GetComponentLocation().Y)
 	{

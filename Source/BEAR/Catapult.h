@@ -3,33 +3,89 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "BEARCharacter.h"
+#include "DraggableObject.h"
+#include "LevelSequenceActor.h"
 #include "GameFramework/Actor.h"
+
 #include "Catapult.generated.h"
 
 UCLASS()
 class BEAR_API ACatapult : public AActor
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	ABEARCharacter* BEAR;
 
 	UPROPERTY(EditAnywhere)
-	AActor* BEAR;
+	ADraggableObject* WoodenPlank;
 
+	UPROPERTY(EditAnywhere)
+	ADraggableObject* Rock;
+
+	UPROPERTY(EditAnywhere)
+	AActor* Cable;
+
+	UPROPERTY(EditAnywhere)
+	ALevelSequenceActor* CatapultSequence;
+	
+	UPROPERTY(EditAnywhere)
+	float ConstructSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere)
+	float ConstructDist = 10.0f;
+	
 	UPROPERTY(EditAnywhere)
 	float HitForce = 1000000.0f;
 
 	UPROPERTY(EditAnywhere)
+	float HitForceWithoutRockMesh = 100000.0f;
+
+	UPROPERTY(EditAnywhere)
 	float HitDot = 0.65f;
-	
-public:	
+
+	UPROPERTY(EditAnywhere)
+	float ShootSpeed = 5.0f;
+
+	UPROPERTY(EditAnywhere)
+	float ShootDist = 10.0f;
+
+	public:	
 
 	ACatapult();
 
-protected:
+	UFUNCTION(BlueprintCallable)
+	void Shoot();
+
+	protected:
 
 	virtual void BeginPlay() override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-
-public:	
-
 	virtual void Tick(float DeltaTime) override;
+
+	private:
+
+	UStaticMeshComponent* WoodenPlankMesh;
+	UStaticMeshComponent* RockMesh;
+
+	enum CatapultState
+	{
+		NotReady,
+		Constructing,
+		Ready,
+		Shooting,
+		Destroyed
+	};
+
+	CatapultState State;
+
+	FTransform InitialWoodenPlankMeshTransform;
+	FTransform InitialRockMeshTransform;
+
+	void OnConstructing(float DeltaTime);
+	void OnShooting(float DeltaTime);
+	
 };
