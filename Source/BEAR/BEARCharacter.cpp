@@ -129,6 +129,22 @@ void ABEARCharacter::NotifyActorEndOverlap(AActor* OtherActor)
 	}
 }
 
+void ABEARCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if(OtherComp->Mobility == EComponentMobility::Movable)
+	{
+		const auto Dot = FVector::DotProduct(HitNormal, FVector::DownVector);
+
+		if(Dot > JumpHitDot)
+		{
+			PotentialTopObstacle = Cast<UStaticMeshComponent>(OtherComp);
+			PotentialTopObstacleHit = Hit;
+		}
+	}
+}
+
 void ABEARCharacter::Tick(float DeltaSeconds)
 {
 	if(IsDrag)
@@ -240,6 +256,12 @@ void ABEARCharacter::TryJump()
 	}
 	else if(!IsDrag)
 	{
+		if(PotentialTopObstacle)
+		{
+			PotentialTopObstacle->AddForce(-PotentialTopObstacleHit.Normal * JumpHitForce, NAME_None, true);
+			PotentialTopObstacle = nullptr;
+		}
+		
 		Jump();
 	}
 }

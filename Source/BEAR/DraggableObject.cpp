@@ -167,6 +167,17 @@ void ADraggableObject::Tick(float DeltaTime)
 	}
 }
 
+void ADraggableObject::Destroyed()
+{
+	Super::Destroyed();
+
+	if(AudioComponent)
+	{
+		AudioComponent->Stop();
+		AudioComponent->DestroyComponent();
+	}
+}
+
 void ADraggableObject::TrySetPhysMaterial(UPhysicalMaterial* PhysicsMaterial)
 {
 	if(GetStaticMeshComponent()->GetBodyInstance()->GetSimplePhysicalMaterial() != PhysicsMaterial)

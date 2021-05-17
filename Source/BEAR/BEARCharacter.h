@@ -48,6 +48,12 @@ class ABEARCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector DeStackForce = FVector(0, 0, 100000);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float JumpHitDot = 0.75f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float JumpHitForce = 10000.0f;
 	
 	int32 InputDirection;
 	
@@ -67,6 +73,7 @@ class ABEARCharacter : public ACharacter
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Landed(const FHitResult& Hit) override;
 
@@ -97,4 +104,7 @@ class ABEARCharacter : public ACharacter
 	UInputComponent* InputComponent;
 	ADraggableObject* ActiveDragObject;
 	AInteractable* ActiveInteractable;
+	UStaticMeshComponent* PotentialTopObstacle;
+
+	FHitResult PotentialTopObstacleHit;
 };

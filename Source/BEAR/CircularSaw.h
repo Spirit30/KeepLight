@@ -63,7 +63,7 @@ class BEAR_API ACircularSaw : public AActor
 	
 	ACircularSaw();
 
-	void Activate(bool flag);
+	void Activate(bool flag, bool BearOrRock);
 
 	protected:
 

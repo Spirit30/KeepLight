@@ -3,6 +3,7 @@
 
 #include "CircularSawButton.h"
 
+#include "BEARCharacter.h"
 #include "Particles/ParticleSystemComponent.h"
 
 ACircularSawButton::ACircularSawButton()
@@ -32,7 +33,7 @@ void ACircularSawButton::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if(IsActiveFlag && ActivatorActors.Contains(OtherActor))
 	{
-		CircularSaw->Activate(true);
+		CircularSaw->Activate(true, Cast<ABEARCharacter>(OtherActor) ? true : false);
 	}
 }
 
@@ -42,7 +43,7 @@ void ACircularSawButton::NotifyActorEndOverlap(AActor* OtherActor)
 
 	if(IsActiveFlag && ActivatorActors.Contains(OtherActor))
 	{
-		CircularSaw->Activate(false);
+		CircularSaw->Activate(false, Cast<ABEARCharacter>(OtherActor) ? true : false);
 	}
 }
 

@@ -13,25 +13,27 @@ ACircularSaw::ACircularSaw()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ACircularSaw::Activate(bool flag)
+void ACircularSaw::Activate(bool flag, bool BearOrRock)
 {
 	IsActive = flag;
 
 	SetActorRelativeLocation(IsActive ? ActiveOffset : FVector::ZeroVector);
 	CollisionOfChildActor->SetCollisionResponseToAllChannels(IsActive ? ECR_Block : ECR_Ignore);
-	DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
+	//DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
 
 	Audio->SetActive(flag, true);
 
 	if(IsActive)
 	{
-		const auto WoodenDeck = Cast<ADraggableObject>(WoodenDeckRemover->ActorToRemove);
+		const auto Remover = BearOrRock ? WoodenDeckMover : WoodenDeckRemover;
+		
+		const auto WoodenDeck = Cast<ADraggableObject>(Remover->ActorToRemove);
 		
 		const float Dist = FVector::Dist(GetActorLocation(), WoodenDeck->GetStaticMeshComponent()->GetCenterOfMass());
 
 		if(Dist < RemoveWoodenDeckDistance)
 		{
-			WoodenDeckRemover->StartRemove();
+			Remover->StartRemove();
 		}
 	}
 }
@@ -55,8 +57,6 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 
 		if(WoodenDeck->IsDrag())
 		{
-			ApearWoodenPlanks();
-			
 			RockMover->StartRemove();
 			WoodenDeckMover->StartRemove();
 			
@@ -96,5 +96,7 @@ void ACircularSaw::ApearWoodenPlanks()
 void ACircularSaw::DisapearWoodenDeck()
 {
 	WoodenDeckMover->ActorToRemove->Destroy();
+
+	ApearWoodenPlanks();
 }
 
