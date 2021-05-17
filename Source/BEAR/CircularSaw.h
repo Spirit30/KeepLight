@@ -18,6 +18,15 @@ class BEAR_API ACircularSaw : public AActor
 	public:
 
 	UPROPERTY(EditAnywhere)
+	AActor* ButtonActor;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* WoodDeckDoneSound;
+
+	UPROPERTY(EditAnywhere)
+	float WoodDeckDoneVolume = 1.0f;
+
+	UPROPERTY(EditAnywhere)
 	AStackObjectRemover* WoodenDeckRemover;
 
 	UPROPERTY(EditAnywhere)
@@ -65,6 +74,7 @@ class BEAR_API ACircularSaw : public AActor
 	private:
 
 	UStaticMeshComponent* CollisionOfChildActor;
+	UAudioComponent* Audio;
 	
 	bool IsActive;
 	USphereComponent* DeathCollision;

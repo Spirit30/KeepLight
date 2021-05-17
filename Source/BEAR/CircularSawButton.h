@@ -19,9 +19,14 @@ class BEAR_API ACircularSawButton : public AActor
 	ACircularSaw* CircularSaw;
 
 	UPROPERTY(EditAnywhere)
+	AActor* SmokeEffectActor;
+	
+	UPROPERTY(EditAnywhere)
 	TArray<AActor*> ActivatorActors;
 
 	ACircularSawButton();
+
+	void Deactivate();
 
 	protected:
 
@@ -29,4 +34,8 @@ class BEAR_API ACircularSawButton : public AActor
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaTime) override;
+
+	private:
+
+	bool IsActiveFlag;
 };

@@ -3,7 +3,10 @@
 
 #include "CircularSaw.h"
 
+#include "CircularSawButton.h"
 #include "DraggableObject.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACircularSaw::ACircularSaw()
 {
@@ -17,6 +20,8 @@ void ACircularSaw::Activate(bool flag)
 	SetActorRelativeLocation(IsActive ? ActiveOffset : FVector::ZeroVector);
 	CollisionOfChildActor->SetCollisionResponseToAllChannels(IsActive ? ECR_Block : ECR_Ignore);
 	DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
+
+	Audio->SetActive(flag, true);
 
 	if(IsActive)
 	{
@@ -37,6 +42,7 @@ void ACircularSaw::BeginPlay()
 
 	CollisionOfChildActor = Cast<UStaticMeshComponent>(CollisionOfChildActorHolder->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	DeathCollision = Cast<USphereComponent>(Death->GetComponentByClass(USphereComponent::StaticClass()));
+	Audio = Cast<UAudioComponent>(GetComponentByClass(UAudioComponent::StaticClass()));
 }
 
 void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -50,9 +56,16 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 		if(WoodenDeck->IsDrag())
 		{
 			ApearWoodenPlanks();
+			
 			RockMover->StartRemove();
 			WoodenDeckMover->StartRemove();
+			
 			GetWorld()->GetTimerManager().SetTimer(RemoveWoodenDeckTimerHandle, this, &ACircularSaw::DisapearWoodenDeck, RemoveWoodenDeckTimer, false);
+			
+			UGameplayStatics::PlaySound2D(GetWorld(), WoodDeckDoneSound, WoodDeckDoneVolume);
+
+			const auto Button = Cast<ACircularSawButton>(ButtonActor);
+			Button->Deactivate();
 		}
 	}
 }
