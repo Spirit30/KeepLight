@@ -27,10 +27,10 @@ class BEAR_API ACircularSaw : public AActor
 	float WoodDeckDoneVolume = 1.0f;
 
 	UPROPERTY(EditAnywhere)
-	AStackObjectRemover* WoodenDeckRemover;
+	AStackObjectRemover* WoodenDeckLeftMover;
 
 	UPROPERTY(EditAnywhere)
-	AStackObjectRemover* WoodenDeckMover;
+	AStackObjectRemover* WoodenDeckRightMover;
 
 	UPROPERTY(EditAnywhere)
 	AStackObjectRemover* RockMover;
