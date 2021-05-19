@@ -26,15 +26,7 @@ void ACircularSaw::Activate(bool flag, bool BearOrRock)
 	if(IsActive)
 	{
 		const auto Remover = BearOrRock ? WoodenDeckRightMover : WoodenDeckLeftMover;
-		
-		const auto WoodenDeck = Cast<ADraggableObject>(Remover->ActorToRemove);
-		
-		const float Dist = FVector::Dist(GetActorLocation(), WoodenDeck->GetStaticMeshComponent()->GetCenterOfMass());
-
-		if(Dist < RemoveWoodenDeckDistance)
-		{
-			Remover->StartRemove();
-		}
+		Remover->StartRemove();
 	}
 }
 

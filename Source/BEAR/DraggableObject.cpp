@@ -26,10 +26,8 @@ void ADraggableObject::Drag(float DeltaSeconds)
 
 	const auto Bear = Cast<ABEARCharacter>(BEAR);
 
-	#if !UE_BUILD_SHIPPING
 	//Find Force depending on Dist
-	Logger::DrawLine(GetWorld(), DragPivot, Bear->GetActorLocation(), DeltaSeconds);
-	#endif
+	//Logger::DrawLine(GetWorld(), DragPivot, Bear->GetActorLocation(), DeltaSeconds);
 	
 	const float Dist = FVector::Dist(DragPivot, Bear->GetActorLocation());
 	FVector Force;
@@ -45,10 +43,8 @@ void ADraggableObject::Drag(float DeltaSeconds)
 		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
 		Force = FVector(0, ForceAmount * ForceDirectionY, 0) + Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
 
-		#if !UE_BUILD_SHIPPING
-		const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
-		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
-		#endif
+		// const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
+		// Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
 	}
 	//Pull
 	else
@@ -61,10 +57,8 @@ void ADraggableObject::Drag(float DeltaSeconds)
 		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
 		Force = FVector(0, ForceAmount * ForceDirectionY, 0) - Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
 
-		#if !UE_BUILD_SHIPPING
-		const FString Output = FString::Printf(TEXT("PULL Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
-		Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
-		#endif
+		// const FString Output = FString::Printf(TEXT("PULL Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
+		// Logger::ToScreen(Output, DeltaSeconds, FColor::Green);
 	}
 	
 	GetStaticMeshComponent()->AddForce(Force, NAME_None, true);

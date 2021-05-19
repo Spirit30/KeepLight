@@ -84,6 +84,7 @@ void AStackObjectRemover::SetTargetActorPhysicsEnabled(bool flag) const
 		if (UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(Component))
 		{
 			Mesh->SetSimulatePhysics(flag);
+			Mesh->SetCollisionEnabled(flag ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 		}
 	}
 }

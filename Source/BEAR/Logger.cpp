@@ -4,7 +4,6 @@
 #include "Logger.h"
 
 #include "DrawDebugHelpers.h"
-#include "EnvironmentQuery/EnvQueryTypes.h"
 
 void Logger::ToScreen(FString Message, float Duration, FColor Color, int32 Key)
 {
