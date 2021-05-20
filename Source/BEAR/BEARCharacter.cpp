@@ -200,19 +200,29 @@ void ABEARCharacter::Landed(const FHitResult& Hit)
 
 void ABEARCharacter::MoveRight(float Value)
 {
-	if(!ActiveInteractable || ActiveInteractable->CanMoveCharacter())
+	if(ActiveInteractable)
 	{
-		InputDirection = Value;
-		
-		const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
-	
-		// add movement in that direction
-		AddMovementInput(MoveDirectionVector, Value);
-
-		//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds() * 2, FColor::Magenta, FString::Printf(TEXT("DIR: %f, %f, %f"), GetActorForwardVector().X, GetActorForwardVector().Y, GetActorForwardVector().Z));
-		const float CharacterDirectionCoef = GetActorForwardVector().Y <= 0 ? 1 : -1;
-		MoveDirection = FMath::Sign(Value) * CharacterDirectionCoef;
+		if(!ActiveInteractable->CanMoveCharacter())
+		{
+			return;
+		}
 	}
+
+	if(IsPullUp)
+	{
+		return;
+	}
+	
+	InputDirection = Value;
+		
+	const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
+	
+	// add movement in that direction
+	AddMovementInput(MoveDirectionVector, Value);
+
+	//GEngine->AddOnScreenDebugMessage(-1, GetWorld()->GetDeltaSeconds() * 2, FColor::Magenta, FString::Printf(TEXT("DIR: %f, %f, %f"), GetActorForwardVector().X, GetActorForwardVector().Y, GetActorForwardVector().Z));
+	const float CharacterDirectionCoef = GetActorForwardVector().Y <= 0 ? 1 : -1;
+	MoveDirection = FMath::Sign(Value) * CharacterDirectionCoef;
 }
 
 void ABEARCharacter::Interact()
@@ -244,6 +254,16 @@ void ABEARCharacter::StopInteract()
 	}
 }
 
+void ABEARCharacter::SetPullUp(bool flag)
+{
+	IsPullUp = flag;
+
+	if(IsPullUp)
+	{
+		StopJumping();
+	}
+}
+
 void ABEARCharacter::TryJump()
 {
 	if(IsStack)
@@ -254,7 +274,7 @@ void ABEARCharacter::TryJump()
 
 		ResetFallingTimer();
 	}
-	else if(!IsDrag)
+	else if(!IsDrag && !IsPullUp)
 	{
 		if(PotentialTopObstacle)
 		{

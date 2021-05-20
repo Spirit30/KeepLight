@@ -38,6 +38,9 @@ class ABEARCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator LeftHandRotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsPullUp;
+	
 	//------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -66,6 +69,8 @@ class ABEARCharacter : public ACharacter
 	bool IsPush() const;
 	bool IsPull() const;
 	void StopInteract();
+	UFUNCTION(BlueprintCallable)
+	void SetPullUp(bool flag);
 	
 	protected:
 
