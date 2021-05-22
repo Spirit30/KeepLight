@@ -30,12 +30,18 @@ class BEAR_API ATrafficLightSwing : public AActor
 	AActor* PhysicsConstraintActor;
 
 	UPROPERTY(EditAnywhere)
-	FVector Location;
+	FRotator UpsideDown;
+	
+	UPROPERTY(EditAnywhere)
+	FVector SwingForce = FVector(0, 100, 0);
 
 	UPROPERTY(EditAnywhere)
-	FRotator Rotation;
+	float AcumulateSwingForceCoef = 0.1f;
 	
 	ATrafficLightSwing();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsBearSwing();
 
 	protected:
 
@@ -48,7 +54,8 @@ class BEAR_API ATrafficLightSwing : public AActor
 
 	UPhysicsConstraintComponent* PhysicsConstraint;
 
-	bool IsBearSwing;
+	FVector AcumulativeSwingForce;
+	bool IsPhysicsActive;
 
 	void SetPhysicsConstraintEnabled(bool flag);
 };

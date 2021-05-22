@@ -200,6 +200,8 @@ void ABEARCharacter::Landed(const FHitResult& Hit)
 
 void ABEARCharacter::MoveRight(float Value)
 {
+	MoveRightInputValue = Value;
+	
 	if(ActiveInteractable)
 	{
 		if(!ActiveInteractable->CanMoveCharacter())
@@ -212,8 +214,11 @@ void ABEARCharacter::MoveRight(float Value)
 	{
 		return;
 	}
-	
-	InputDirection = Value;
+
+	if(GetIsSwing())
+	{
+		return;
+	}
 		
 	const auto MoveDirectionVector = FVector(0.0f,-1.0f,0.0f);
 	
@@ -262,6 +267,16 @@ void ABEARCharacter::SetPullUp(bool flag)
 	{
 		StopJumping();
 	}
+}
+
+void ABEARCharacter::SetIsSwing(bool flag)
+{
+	IsSwing = flag;
+}
+
+bool ABEARCharacter::GetIsSwing()
+{
+	return IsSwing;
 }
 
 void ABEARCharacter::TryJump()

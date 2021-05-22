@@ -58,7 +58,7 @@ class ABEARCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float JumpHitForce = 10000.0f;
 	
-	int32 InputDirection;
+	float MoveRightInputValue;
 	
 	ABEARCharacter();
 
@@ -71,6 +71,8 @@ class ABEARCharacter : public ACharacter
 	void StopInteract();
 	UFUNCTION(BlueprintCallable)
 	void SetPullUp(bool flag);
+	void SetIsSwing(bool flag);
+	bool GetIsSwing();
 	
 	protected:
 
@@ -91,6 +93,8 @@ class ABEARCharacter : public ACharacter
 
 	bool IsDrag;
 	bool IsKilledFlag;
+
+	bool IsSwing;
 	
 	TArray<ADraggableObject*> CloseDragObjects;
 	TArray<AInteractable*> CloseInteractables;

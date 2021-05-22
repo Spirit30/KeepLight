@@ -3,9 +3,16 @@
 
 #include "TrafficLightSwing.h"
 
+#include "Logger.h"
+
 ATrafficLightSwing::ATrafficLightSwing()
 {
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+bool ATrafficLightSwing::GetIsBearSwing()
+{
+	return Bear->GetIsSwing();
 }
 
 void ATrafficLightSwing::BeginPlay()
@@ -15,30 +22,23 @@ void ATrafficLightSwing::BeginPlay()
 	PhysicsConstraint = Cast<UPhysicsConstraintComponent>(PhysicsConstraintActor->GetComponentByClass(UPhysicsConstraintComponent::StaticClass()));
 	
 	SetPhysicsConstraintEnabled(false);
-	
-	TrafficLightDraggable->SetActorLocationAndRotation(Location, Rotation);
-	
 	SetActorTickEnabled(false);
+
+	TrafficLightDraggable->SetActorLocationAndRotation(SwingAnchor->GetActorLocation(), UpsideDown);
 }
 
 void ATrafficLightSwing::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if(OtherActor == Bear)
+	if(IsPhysicsActive && OtherActor == Bear)
 	{
-		IsBearSwing = true;
+		Bear->SetIsSwing(true);
+		AcumulativeSwingForce = FVector::ZeroVector;
 	}
 	else if(OtherActor == TrafficLightDraggable)
 	{
-		SetPhysicsConstraintEnabled(true);
-		
-		PhysicsConstraint->SetConstrainedComponents(
-			Cast<UPrimitiveComponent>(SwingAnchor->GetRootComponent()),
-			NAME_None,
-			TrafficLightDraggable->GetStaticMeshComponent(),
-			NAME_None);
-		
+		SetPhysicsConstraintEnabled(true);	
 		SetActorTickEnabled(true);
 	}
 }
@@ -47,9 +47,10 @@ void ATrafficLightSwing::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
 
-	if(OtherActor == Bear)
+	if(IsPhysicsActive && OtherActor == Bear)
 	{
-		IsBearSwing = false;
+		Bear->SetIsSwing(false);
+		AcumulativeSwingForce = FVector::ZeroVector;
 	}
 }
 
@@ -57,14 +58,18 @@ void ATrafficLightSwing::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(IsBearSwing)
+	SetActorLocation(TrafficLightDraggable->GetActorLocation());
+
+	if(Bear->GetIsSwing())
 	{
-		SetActorLocation(Bear->GetActorLocation());
+		AcumulativeSwingForce += SwingForce * AcumulateSwingForceCoef;
+		TrafficLightDraggable->GetStaticMeshComponent()->AddForce(AcumulativeSwingForce * Bear->MoveRightInputValue);
 	}
 }
 
 void ATrafficLightSwing::SetPhysicsConstraintEnabled(bool flag)
 {
+	IsPhysicsActive = flag;
 	PhysicsConstraint->SetLinearXLimit(flag ? LCM_Locked : LCM_Free, 0);
 	PhysicsConstraint->SetLinearYLimit(flag ? LCM_Locked : LCM_Free, 0);
 	PhysicsConstraint->SetLinearZLimit(flag ? LCM_Locked : LCM_Free, 0);
