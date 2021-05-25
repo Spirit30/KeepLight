@@ -3,6 +3,9 @@
 
 #include "TrafficLightSwing.h"
 
+#include "Logger.h"
+#include "Kismet/GameplayStatics.h"
+
 ATrafficLightSwing::ATrafficLightSwing()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,11 +19,15 @@ bool ATrafficLightSwing::GetIsBearSwing()
 void ATrafficLightSwing::ResetAcumulativeSwingForce()
 {
 	AcumulativeSwingForce = FVector::ZeroVector;
+	TrafficLightDraggable->GetStaticMeshComponent()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 }
 
 void ATrafficLightSwing::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitialLocation = TrafficLightDraggable->GetActorLocation();
+	InitialRotation = TrafficLightDraggable->GetActorRotation();
 
 	PhysicsConstraint = Cast<UPhysicsConstraintComponent>(PhysicsConstraintActor->GetComponentByClass(UPhysicsConstraintComponent::StaticClass()));
 	
@@ -41,6 +48,9 @@ void ATrafficLightSwing::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 	else if(OtherActor == TrafficLightDraggable)
 	{
+		TrafficLightDraggable->SetActorLocationAndRotation(InitialLocation, InitialRotation);
+		UGameplayStatics::PlaySound2D(this, FallSound);
+		
 		SetPhysicsConstraintEnabled(true);	
 		SetActorTickEnabled(true);
 	}

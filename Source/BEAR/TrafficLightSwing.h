@@ -37,6 +37,9 @@ class BEAR_API ATrafficLightSwing : public AActor
 
 	UPROPERTY(EditAnywhere)
 	float AcumulateSwingForceCoef = 0.1f;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* FallSound;
 	
 	ATrafficLightSwing();
 
@@ -57,6 +60,8 @@ class BEAR_API ATrafficLightSwing : public AActor
 
 	UPhysicsConstraintComponent* PhysicsConstraint;
 
+	FVector InitialLocation;
+	FRotator InitialRotation;
 	FVector AcumulativeSwingForce;
 	bool IsPhysicsActive;
 
