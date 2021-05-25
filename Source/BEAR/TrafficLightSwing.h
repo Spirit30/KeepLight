@@ -43,6 +43,9 @@ class BEAR_API ATrafficLightSwing : public AActor
 	UFUNCTION(BlueprintCallable)
 	bool GetIsBearSwing();
 
+	UFUNCTION(BlueprintCallable)
+	void ResetAcumulativeSwingForce();
+
 	protected:
 
 	virtual void BeginPlay() override;

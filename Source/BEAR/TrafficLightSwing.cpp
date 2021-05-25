@@ -3,8 +3,6 @@
 
 #include "TrafficLightSwing.h"
 
-#include "Logger.h"
-
 ATrafficLightSwing::ATrafficLightSwing()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,6 +11,11 @@ ATrafficLightSwing::ATrafficLightSwing()
 bool ATrafficLightSwing::GetIsBearSwing()
 {
 	return Bear->GetIsSwing();
+}
+
+void ATrafficLightSwing::ResetAcumulativeSwingForce()
+{
+	AcumulativeSwingForce = FVector::ZeroVector;
 }
 
 void ATrafficLightSwing::BeginPlay()
@@ -34,7 +37,7 @@ void ATrafficLightSwing::NotifyActorBeginOverlap(AActor* OtherActor)
 	if(IsPhysicsActive && OtherActor == Bear)
 	{
 		Bear->SetIsSwing(true);
-		AcumulativeSwingForce = FVector::ZeroVector;
+		ResetAcumulativeSwingForce();
 	}
 	else if(OtherActor == TrafficLightDraggable)
 	{
@@ -50,7 +53,7 @@ void ATrafficLightSwing::NotifyActorEndOverlap(AActor* OtherActor)
 	if(IsPhysicsActive && OtherActor == Bear)
 	{
 		Bear->SetIsSwing(false);
-		AcumulativeSwingForce = FVector::ZeroVector;
+		ResetAcumulativeSwingForce();
 	}
 }
 

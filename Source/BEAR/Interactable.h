@@ -24,7 +24,7 @@ class BEAR_API AInteractable : public AActor
 	bool CanMoveCharacter() const;
 
 	AInteractable();
-	
+
 	bool CanInteract() const;
 	bool IsInteracting() const;
 	float GetDragDot() const;
