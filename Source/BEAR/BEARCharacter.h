@@ -73,6 +73,8 @@ class ABEARCharacter : public ACharacter
 	void SetPullUp(bool flag);
 	void SetIsSwing(bool flag);
 	bool GetIsSwing();
+	UFUNCTION(BlueprintCallable)
+	void SetUnderwater(bool flag);
 	
 	protected:
 
@@ -95,6 +97,7 @@ class ABEARCharacter : public ACharacter
 	bool IsKilledFlag;
 
 	bool IsSwing;
+	bool IsUnderwater;
 	
 	TArray<ADraggableObject*> CloseDragObjects;
 	TArray<AInteractable*> CloseInteractables;

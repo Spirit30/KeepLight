@@ -278,8 +278,19 @@ bool ABEARCharacter::GetIsSwing()
 	return IsSwing;
 }
 
+void ABEARCharacter::SetUnderwater(bool flag)
+{
+	IsUnderwater = flag;
+	GetCharacterMovement()->MaxWalkSpeed = IsUnderwater ? MinWalkSpeed : MaxWalkSpeed;
+}
+
 void ABEARCharacter::TryJump()
 {
+	if(IsUnderwater)
+	{
+		return;
+	}
+	
 	if(IsStack)
 	{
 		GetCharacterMovement()->AddImpulse(DeStackForce, true);
