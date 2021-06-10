@@ -250,7 +250,11 @@ void ABEARCharacter::StopInteract()
 	{
 		ActiveDragObject->StopDrag();
 
-		GetCharacterMovement()->MaxWalkSpeed = 	MaxWalkSpeed;
+		if(!IsUnderwater)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 	MaxWalkSpeed;
+		}
+		
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 
 		IsDrag = false;
