@@ -41,7 +41,7 @@ void ADraggableObject::Drag(float DeltaSeconds)
 	
 		const FVector ForceDirection = (DragPivot - Bear->GetActorLocation()).GetUnsafeNormal();
 		const int32 ForceDirectionY = FMath::Sign(ForceDirection.Y);
-		Force = FVector(0, ForceAmount * ForceDirectionY, 0) + Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
+		Force = FVector(0, ForceAmount * ForceDirectionY, ZPushForce) + Bear->GetCapsuleComponent()->GetComponentVelocity() * CharacterAffectCoef;
 
 		// const FString Output = FString::Printf(TEXT("PUSH Dist: %f Dist Alpha: %f  Force.X: %f, Force.Y: %f, Force.Z: %f"), Dist, ForceAlphaClamped, Force.X, Force.Y, Force.Z);
 		// Logger::ToScreen(Output, DeltaSeconds, FColor::Green);

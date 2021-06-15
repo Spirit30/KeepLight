@@ -24,6 +24,8 @@ void AScarecrowCrow::BeginPlay()
 
 void AScarecrowCrow::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	Super::NotifyActorBeginOverlap(OtherActor);
+	
 	switch (State)
 	{
 		case Calm:

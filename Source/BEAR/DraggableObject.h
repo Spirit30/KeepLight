@@ -22,6 +22,9 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	float MaxDragForce = 10000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ZPushForce = 0.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxDragDist = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
