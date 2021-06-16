@@ -68,6 +68,7 @@ class ABEARCharacter : public ACharacter
 	void Kill(bool HasEffect, FVector Point);
 	bool IsPush() const;
 	bool IsPull() const;
+	UFUNCTION(BlueprintCallable)
 	void StopInteract();
 	UFUNCTION(BlueprintCallable)
 	void SetPullUp(bool flag);
