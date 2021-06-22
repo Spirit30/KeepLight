@@ -21,10 +21,10 @@ class BEAR_API AStackObjectRemover : public AActor
 	TArray<FVector> ActorRemovePath;
 
 	UPROPERTY(EditAnywhere)
-	float ReachDestinationDist = 2.0f;
+	float ReachDestinationDist = 50.0f;
 
 	UPROPERTY(EditAnywhere)
-	float RemoveSpeed = 20.0f;
+	float RemoveSpeed = 1000.0f;
 	
 	AStackObjectRemover();
 	void StartRemove();

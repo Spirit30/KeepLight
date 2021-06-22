@@ -45,12 +45,15 @@ void AStackObjectRemover::Tick(float DeltaTime)
 
 	if(ActorToRemove && IsActive())
 	{
+		const auto CurrentLocation = ActorToRemove->GetActorLocation();
 		const auto PathPoint = ActorRemovePath[PathPointIndex];
-		const auto Location = FMath::Lerp(ActorToRemove->GetActorLocation(), PathPoint, DeltaTime * RemoveSpeed);
-		const float Dist = FVector::Dist(ActorToRemove->GetActorLocation(), Location);
+
+		const float Dist = FVector::Dist(CurrentLocation, PathPoint);
 		
 		if(Dist > ReachDestinationDist)
 		{
+			const auto Location = FMath::Lerp(CurrentLocation, PathPoint, DeltaTime * RemoveSpeed / Dist);
+			
 			ActorToRemove->SetActorLocation(Location);
 			Hand->SetWorldLocation(Location);
 		}
