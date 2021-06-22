@@ -38,6 +38,8 @@ class BEAR_API AMover : public AActor
 
 	UFUNCTION(BlueprintCallable)
 	void StartMove();
+	UFUNCTION(BlueprintCallable)
+	void StopMove();
 
 	protected:
 
@@ -49,6 +51,5 @@ class BEAR_API AMover : public AActor
 
 	float StartDistance;
 
-	void StopMove();
 	FVector GetDestination();
 };
