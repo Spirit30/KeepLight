@@ -50,6 +50,8 @@ void AFloatingContainer::Tick(float DeltaTime)
 	{
 		const auto Location = FMath::Lerp(CurrentLocation, DestinationLocation, Speed / Dist * DeltaTime);
 		SetActorLocation(Location);
+
+		Logger::DrawLine(GetWorld(), CurrentLocation, DestinationLocation, DeltaTime, FColor::Orange);
 	}
 	else
 	{

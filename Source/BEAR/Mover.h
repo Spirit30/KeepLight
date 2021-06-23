@@ -50,6 +50,7 @@ class BEAR_API AMover : public AActor
 	private:
 
 	float StartDistance;
+	UStaticMeshComponent* TargetView;
 
 	FVector GetDestination();
 };

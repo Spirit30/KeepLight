@@ -12,6 +12,7 @@ AMover::AMover()
 void AMover::StartMove()
 {
 	StartDistance = FVector::Dist(Target->GetActorLocation(), GetDestination());
+	TargetView = Cast<UStaticMeshComponent>(Target->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	
 	SetActorTickEnabled(true);
 }
@@ -36,6 +37,12 @@ void AMover::NotifyActorBeginOverlap(AActor* OtherActor)
 void AMover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(TargetView)
+	{
+		TargetView->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+		TargetView->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	}
 
 	const auto CurrentLocation = Target->GetActorLocation();
 	const auto Destination = GetDestination();
