@@ -3,6 +3,7 @@
 #pragma once
 #include "CoreMinimal.h"
 
+#include "Mover.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "Hook.generated.h"
@@ -18,13 +19,22 @@ class BEAR_API AHook : public AActor
 	TArray<AActor*> DropActors;
 
 	UPROPERTY(EditAnywhere)
+	TArray<FRotator> DropRotations;
+	
+	UPROPERTY(EditAnywhere)
 	TArray<AActor*> TakeActors;
 
 	UPROPERTY(EditAnywhere)
-	TArray<AActor*> HorizontalStopers;
-
+	AActor* DestinationArea;
+	
+	UPROPERTY(EditAnywhere)
+	TArray<AMover*> Movers;
+	
 	UPROPERTY(EditAnywhere)
 	float Speed = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	float TakenActorSpeed = 10.0f;
 
 	AHook();
 
@@ -64,7 +74,11 @@ class BEAR_API AHook : public AActor
 	
 	HookState State;
 
+	AActor* TakenActor;
+	bool IsReadyToDrop;
+
 	void SetState(HookState NewState);
 	void RedirectVertical();
 	void RedirectHorizontal();
+	void TryEnablePhysics(AActor* Actor, bool Flag);
 };

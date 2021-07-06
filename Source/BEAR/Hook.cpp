@@ -3,6 +3,7 @@
 
 #include "Hook.h"
 
+#include "DraggableObject.h"
 #include "Logger.h"
 #include "Util.h"
 #include "Components/BoxComponent.h"
@@ -33,10 +34,49 @@ void AHook::OnHookButtonEnd()
 void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Logger::ToScreen("CONTACT: " + OtherActor->GetName(), 2.0f, FColor::Red);
-	
-	if(DropActors.Contains(OtherActor))
+
+	if(TakeActors.Contains(OtherActor))
+	{
+		if(!TakenActor)
+		{
+			TakenActor = OtherActor;
+			IsReadyToDrop = false;
+
+			TryEnablePhysics(TakenActor, false);
+		}
+	}
+	else if(OtherActor == DestinationArea)
+	{
+		if(TakenActor)
+		{
+			const int32 Index = TakeActors.IndexOfByKey(TakenActor);
+			Movers[Index]->StartMove();
+
+			TryEnablePhysics(TakenActor, true);
+				
+			TakenActor = nullptr;
+		}
+	}
+	else if(DropActors.Contains(OtherActor))
 	{
 		RedirectVertical();
+
+		if(IsReadyToDrop)
+		{
+			if(TakenActor)
+			{
+				const int32 Index = TakeActors.IndexOfByKey(TakenActor);
+				TakenActor->SetActorRotation(DropRotations[Index]);
+				
+				TryEnablePhysics(TakenActor, true);
+				
+				TakenActor = nullptr;
+			}
+		}
+		else
+		{
+			IsReadyToDrop = true;
+		}
 	}
 }
 
@@ -97,6 +137,12 @@ void AHook::Tick(float DeltaTime)
 	const float Dist = FVector::Dist(Location, Destination);
 	Location = FMath::Lerp(Location, Destination, Speed * DeltaTime / Dist);
 	SetActorLocation(Location);
+
+	if(TakenActor && IsReadyToDrop)
+	{
+		Location = FMath::Lerp(TakenActor->GetActorLocation(), TakeTrigger->GetComponentLocation(), TakenActorSpeed * DeltaTime);
+		TakenActor->SetActorLocation(Location);
+	}
 }
 
 void AHook::SetState(HookState NewState)
@@ -145,4 +191,18 @@ void AHook::RedirectHorizontal()
 	Destination.Y = HorizontalDestination;
 
 	Logger::ToScreen("RedirectHorizontal - ", HorizontalDestination, 2.0f);
+}
+
+void AHook::TryEnablePhysics(AActor* Actor, bool Flag)
+{
+	const auto Draggable = Cast<ADraggableObject>(Actor);
+
+	if(Draggable)
+	{
+		const auto StaticMesh = Cast<UStaticMeshComponent>(Util::GetComponentByName(Draggable, "View"));
+		StaticMesh->SetCollisionEnabled(Flag ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+		StaticMesh->SetSimulatePhysics(Flag);
+		StaticMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		StaticMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	}
 }
