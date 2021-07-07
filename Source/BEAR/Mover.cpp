@@ -3,6 +3,8 @@
 
 #include "Mover.h"
 
+#include "Logger.h"
+
 AMover::AMover()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,9 +14,12 @@ AMover::AMover()
 void AMover::StartMove()
 {
 	StartDistance = FVector::Dist(Target->GetActorLocation(), GetDestination());
-	TargetView = Cast<UStaticMeshComponent>(Target->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+
+	Target->GetComponents<UStaticMeshComponent>(TargetViews);
 	
 	SetActorTickEnabled(true);
+
+	IsMoveFlag = true;
 }
 
 void AMover::BeginPlay()
@@ -38,12 +43,12 @@ void AMover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(TargetView)
+	for(auto TargetView : TargetViews)
 	{
 		TargetView->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 		TargetView->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	}
-
+	
 	const auto CurrentLocation = Target->GetActorLocation();
 	const auto Destination = GetDestination();
 	const float Dist = FVector::Dist(CurrentLocation, Destination);
@@ -59,6 +64,9 @@ void AMover::Tick(float DeltaTime)
 			const auto Rotation = FMath::Lerp(Target->GetActorRotation(), RotationDestination, Progress);
 			Target->SetActorRotation(Rotation);
 		}
+
+		Logger::ToScreen("Moving - " + Target->GetName(), DeltaTime, FColor::Orange);
+		Logger::DrawLine(GetWorld(), Location, Destination, DeltaTime, FColor::Orange);
 	}
 	else
 	{
@@ -74,6 +82,12 @@ void AMover::Tick(float DeltaTime)
 void AMover::StopMove()
 {
 	SetActorTickEnabled(false);
+	IsMoveFlag = false;
+}
+
+bool AMover::IsMove() const
+{
+	return IsMoveFlag;
 }
 
 FVector AMover::GetDestination()

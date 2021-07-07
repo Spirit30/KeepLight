@@ -44,6 +44,9 @@ class BEAR_API AHook : public AActor
 	UFUNCTION(BlueprintCallable)
 	void OnHookButtonEnd();
 
+	UFUNCTION(BlueprintCallable)
+	void SetPaused(bool Flag);
+
 	UFUNCTION()
 	void OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -76,6 +79,7 @@ class BEAR_API AHook : public AActor
 
 	AActor* TakenActor;
 	bool IsReadyToDrop;
+	bool IsPausedFlag;
 
 	void SetState(HookState NewState);
 	void RedirectVertical();

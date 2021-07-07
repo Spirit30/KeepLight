@@ -31,6 +31,11 @@ void AHook::OnHookButtonEnd()
 	}
 }
 
+void AHook::SetPaused(bool Flag)
+{
+	IsPausedFlag = Flag;
+}
+
 void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Logger::ToScreen("CONTACT: " + OtherActor->GetName(), 2.0f, FColor::Red);
@@ -39,10 +44,16 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 	{
 		if(!TakenActor)
 		{
-			TakenActor = OtherActor;
-			IsReadyToDrop = false;
+			// const int32 Index = TakeActors.IndexOfByKey(OtherActor);
+			// if(!Movers[Index]->IsMove())
+			// {
+				TakenActor = OtherActor;
+				IsReadyToDrop = false;
 
-			TryEnablePhysics(TakenActor, false);
+				TryEnablePhysics(TakenActor, false);
+
+				Logger::ToScreen("TAKE: " + TakenActor->GetName(), 2.0f, FColor::Green);
+			//}
 		}
 	}
 	else if(OtherActor == DestinationArea)
@@ -50,10 +61,15 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 		if(TakenActor)
 		{
 			const int32 Index = TakeActors.IndexOfByKey(TakenActor);
-			Movers[Index]->StartMove();
+			const auto Mover = Movers[Index];
+			if(Mover)
+			{
+				Movers[Index]->StartMove();
+			}
 
 			TryEnablePhysics(TakenActor, true);
-				
+
+			Logger::ToScreen("DESTANATION: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
 			TakenActor = nullptr;
 		}
 	}
@@ -69,7 +85,8 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 				TakenActor->SetActorRotation(DropRotations[Index]);
 				
 				TryEnablePhysics(TakenActor, true);
-				
+
+				Logger::ToScreen("DROP: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
 				TakenActor = nullptr;
 			}
 		}
@@ -104,6 +121,11 @@ void AHook::BeginPlay()
 void AHook::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(IsPausedFlag)
+	{
+		return;
+	}
 
 	auto Location = GetActorLocation();
 

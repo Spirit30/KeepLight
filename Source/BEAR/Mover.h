@@ -40,6 +40,7 @@ class BEAR_API AMover : public AActor
 	void StartMove();
 	UFUNCTION(BlueprintCallable)
 	void StopMove();
+	bool IsMove() const;
 
 	protected:
 
@@ -50,7 +51,8 @@ class BEAR_API AMover : public AActor
 	private:
 
 	float StartDistance;
-	UStaticMeshComponent* TargetView;
+	TArray<UStaticMeshComponent*> TargetViews;
+	bool IsMoveFlag;
 
 	FVector GetDestination();
 };
