@@ -3,6 +3,7 @@
 #pragma once
 #include "CoreMinimal.h"
 
+#include "BEARCharacter.h"
 #include "Mover.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"

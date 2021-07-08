@@ -42,13 +42,15 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 
 	if(TakeActors.Contains(OtherActor))
 	{
-		if(!TakenActor)
+		if(!TakenActor && State == MoveVertical)
 		{
 			// const int32 Index = TakeActors.IndexOfByKey(OtherActor);
 			// if(!Movers[Index]->IsMove())
 			// {
 				TakenActor = OtherActor;
 				IsReadyToDrop = false;
+
+				TakenActor->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 
 				TryEnablePhysics(TakenActor, false);
 
