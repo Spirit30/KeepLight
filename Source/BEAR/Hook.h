@@ -37,6 +37,9 @@ class BEAR_API AHook : public AActor
 	UPROPERTY(EditAnywhere)
 	float TakenActorSpeed = 10.0f;
 
+	UPROPERTY(EditAnywhere)
+	USoundWave* MoveSound;
+
 	AHook();
 
 	UFUNCTION(BlueprintCallable)
@@ -78,6 +81,7 @@ class BEAR_API AHook : public AActor
 	
 	HookState State;
 
+	UAudioComponent* MoveAudioComponent;
 	AActor* TakenActor;
 	bool IsReadyToDrop;
 	bool IsPausedFlag;

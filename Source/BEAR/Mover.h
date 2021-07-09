@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "Mover.generated.h"
 
 UCLASS()
@@ -12,7 +13,7 @@ class BEAR_API AMover : public AActor
 	GENERATED_BODY()
 	
 	public:
-
+	
 	UPROPERTY(EditAnywhere)
 	bool AutoMove;
 

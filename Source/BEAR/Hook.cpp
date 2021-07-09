@@ -4,10 +4,11 @@
 #include "Hook.h"
 
 #include "DraggableObject.h"
-#include "Logger.h"
 #include "Util.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AHook::AHook()
 {
@@ -38,7 +39,7 @@ void AHook::SetPaused(bool Flag)
 
 void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Logger::ToScreen("CONTACT: " + OtherActor->GetName(), 2.0f, FColor::Red);
+	//Logger::ToScreen("CONTACT: " + OtherActor->GetName(), 2.0f, FColor::Red);
 
 	if(TakeActors.Contains(OtherActor))
 	{
@@ -54,7 +55,7 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 
 				TryEnablePhysics(TakenActor, false);
 
-				Logger::ToScreen("TAKE: " + TakenActor->GetName(), 2.0f, FColor::Green);
+				//Logger::ToScreen("TAKE: " + TakenActor->GetName(), 2.0f, FColor::Green);
 			//}
 		}
 	}
@@ -71,7 +72,7 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 
 			TryEnablePhysics(TakenActor, true);
 
-			Logger::ToScreen("DESTANATION: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
+			//Logger::ToScreen("DESTANATION: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
 			TakenActor = nullptr;
 		}
 	}
@@ -88,7 +89,7 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 				
 				TryEnablePhysics(TakenActor, true);
 
-				Logger::ToScreen("DROP: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
+				//Logger::ToScreen("DROP: " + TakenActor->GetName(), 2.0f, FColor::Yellow);
 				TakenActor = nullptr;
 			}
 		}
@@ -177,7 +178,12 @@ void AHook::SetState(HookState NewState)
 	{
 		SetActorTickEnabled(false);
 
-		Logger::ToScreen("New State - Calm");
+		//Logger::ToScreen("New State - Calm");
+
+		if(MoveAudioComponent)
+		{
+			MoveAudioComponent->SetPaused(true);
+		}
 	}
 	else
 	{
@@ -187,17 +193,26 @@ void AHook::SetState(HookState NewState)
 		{
 			RedirectHorizontal();
 
-			Logger::ToScreen("New State - Move Horizontal");
+			//Logger::ToScreen("New State - Move Horizontal");
 		}
 	
 		if(State == MoveVertical)
 		{
 			RedirectVertical();
 
-			Logger::ToScreen("New State - Move Vertical");
+			//Logger::ToScreen("New State - Move Vertical");
 		}
 
 		SetActorTickEnabled(true);
+
+		if(MoveAudioComponent)
+		{
+			MoveAudioComponent->SetPaused(false);
+		}
+		else
+		{
+			MoveAudioComponent = UGameplayStatics::SpawnSoundAttached(MoveSound, GetRootComponent());
+		}
 	}
 }
 
@@ -206,7 +221,7 @@ void AHook::RedirectVertical()
 	VerticalDestination = VerticalDestination == BottomLimit ? TopLimit : BottomLimit;
 	Destination.Z = VerticalDestination;
 	
-	Logger::ToScreen("RedirectVertical - ", VerticalDestination, 2.0f);
+	//Logger::ToScreen("RedirectVertical - ", VerticalDestination, 2.0f);
 }
 
 void AHook::RedirectHorizontal()
@@ -214,7 +229,7 @@ void AHook::RedirectHorizontal()
 	HorizontalDestination = HorizontalDestination == LeftLimit ? RightLimit : LeftLimit;
 	Destination.Y = HorizontalDestination;
 
-	Logger::ToScreen("RedirectHorizontal - ", HorizontalDestination, 2.0f);
+	//Logger::ToScreen("RedirectHorizontal - ", HorizontalDestination, 2.0f);
 }
 
 void AHook::TryEnablePhysics(AActor* Actor, bool Flag)
