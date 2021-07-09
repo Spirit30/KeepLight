@@ -26,7 +26,14 @@ void AMover::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StopMove();
+	if(AutoMove)
+	{
+		StartMove();
+	}
+	else
+	{
+		StopMove();
+	}
 }
 
 void AMover::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -53,6 +60,15 @@ void AMover::Tick(float DeltaTime)
 	const auto Destination = GetDestination();
 	const float Dist = FVector::Dist(CurrentLocation, Destination);
 
+	Logger::ToScreen("Moving " + Target->GetName() + " Dist ", Dist, DeltaTime, FColor::Yellow);
+
+	if(!Interpolate)
+	{
+		Target->SetActorLocation(Destination);
+		MovementEnd();
+		return;
+	}
+
 	if(Dist > ReachDestinationDist)
 	{
 		const auto Location = FMath::Lerp(Target->GetActorLocation(), Destination, Speed * DeltaTime);
@@ -70,12 +86,7 @@ void AMover::Tick(float DeltaTime)
 	}
 	else
 	{
-		StopMove();
-
-		if(ShouldRotate)
-		{
-			Target->SetActorRotation(RotationDestination);
-		}
+		MovementEnd();
 	}
 }
 
@@ -93,5 +104,15 @@ bool AMover::IsMove() const
 FVector AMover::GetDestination()
 {
 	return DestinationActor ? DestinationActor->GetActorLocation() : GetActorLocation() + LocalDestination;
+}
+
+void AMover::MovementEnd()
+{
+	StopMove();
+
+	if(ShouldRotate)
+	{
+		Target->SetActorRotation(RotationDestination);
+	}
 }
 

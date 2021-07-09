@@ -14,6 +14,12 @@ class BEAR_API AMover : public AActor
 	public:
 
 	UPROPERTY(EditAnywhere)
+	bool AutoMove;
+
+	UPROPERTY(EditAnywhere)
+	bool Interpolate = true;
+
+	UPROPERTY(EditAnywhere)
 	AActor* Target;
 
 	UPROPERTY(EditAnywhere)
@@ -55,4 +61,5 @@ class BEAR_API AMover : public AActor
 	bool IsMoveFlag;
 
 	FVector GetDestination();
+	void MovementEnd();
 };
