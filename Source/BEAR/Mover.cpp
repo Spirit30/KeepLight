@@ -8,7 +8,6 @@
 AMover::AMover()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void AMover::StartMove()
@@ -26,6 +25,12 @@ void AMover::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Initialized from outside
+	if(IsMove())
+	{
+		return;
+	}
+	
 	if(AutoMove)
 	{
 		StartMove();
