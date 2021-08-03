@@ -11,16 +11,39 @@ class BEAR_API AExcavator : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+	public:
+
+	UPROPERTY(EditAnywhere)
+	float Speed = 10.0f;
+	
+	UFUNCTION(BlueprintCallable)
+	void SetBearInCabine(bool Flag);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCanMove(bool Flag);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetAnimatingLader(bool Flag);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayWheelsMoveAnimation();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopWheelsMoveAnimation();
+	
 	AExcavator();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	protected:
 
-public:	
-	// Called every frame
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	private:
+
+	bool IsBearInCabine;
+	bool IsCanMove;
+	bool IsAnimatingLader;
+
+	bool IsMove() const;
+	void UpdateWheelsMoveAnimation();
 };

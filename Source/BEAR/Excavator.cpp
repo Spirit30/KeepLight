@@ -3,25 +3,66 @@
 
 #include "Excavator.h"
 
-// Sets default values
+void AExcavator::SetBearInCabine(bool Flag)
+{
+	IsBearInCabine = Flag;
+
+	UpdateWheelsMoveAnimation();
+}
+
+void AExcavator::SetCanMove(bool Flag)
+{
+	IsCanMove = Flag;
+
+	UpdateWheelsMoveAnimation();
+}
+
+void AExcavator::SetAnimatingLader(bool Flag)
+{
+	IsAnimatingLader = Flag;
+
+	UpdateWheelsMoveAnimation();
+}
+
 AExcavator::AExcavator()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
 void AExcavator::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetCanMove(true);
 }
 
-// Called every frame
 void AExcavator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(IsMove())
+	{
+		auto Location = GetActorLocation();
+		Location.Y -= DeltaTime * Speed;
+		SetActorLocation(Location);
+	}
+}
+
+bool AExcavator::IsMove() const
+{
+	return  IsBearInCabine && IsCanMove && !IsAnimatingLader;
+}
+
+void AExcavator::UpdateWheelsMoveAnimation()
+{
+	if(IsMove())
+	{
+		PlayWheelsMoveAnimation();
+	}
+	else
+	{
+		StopWheelsMoveAnimation();
+	}
 }
 
