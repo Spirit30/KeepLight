@@ -63,6 +63,7 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	ADraggableObject();
 
 	void Drag(float DeltaSeconds);
+	UFUNCTION(BlueprintCallable)
 	void StopDrag();
 	FVector GetRightHandLocation() const;
 	FVector GetLeftHandLocation() const;
