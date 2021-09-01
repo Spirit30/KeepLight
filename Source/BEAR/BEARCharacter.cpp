@@ -317,15 +317,29 @@ void ABEARCharacter::TryJump()
 
 bool ABEARCharacter::CanDrag()
 {
+	ADraggableObject* ClosestDragObject = nullptr;
+	float MinDist = TNumericLimits<float>::Max();
+	
 	for(auto PotentialDragObject : CloseDragObjects)
 	{
 		if(PotentialDragObject->CanDrag())
 		{
-			ActiveDragObject = PotentialDragObject;
-			return true;
+			const float Dist = PotentialDragObject->GetDistance();
+			
+			if(PotentialDragObject->GetDistance() < MinDist)
+			{
+				MinDist = Dist;
+				ClosestDragObject = PotentialDragObject;
+			}
 		}
 	}
 
+	if(ClosestDragObject)
+	{
+		ActiveDragObject = ClosestDragObject;
+		return true;
+	}
+	
 	return false;
 }
 

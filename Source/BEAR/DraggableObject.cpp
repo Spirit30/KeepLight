@@ -3,7 +3,6 @@
 #include "DraggableObject.h"
 
 #include "BEARCharacter.h"
-#include "Logger.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/StaticMeshSocket.h"
@@ -29,7 +28,7 @@ void ADraggableObject::Drag(float DeltaSeconds)
 	//Find Force depending on Dist
 	//Logger::DrawLine(GetWorld(), DragPivot, Bear->GetActorLocation(), DeltaSeconds);
 	
-	const float Dist = FVector::Dist(DragPivot, Bear->GetActorLocation());
+	Dist = FVector::Dist(DragPivot, Bear->GetActorLocation());
 	FVector Force;
 	
 	//Push
@@ -90,6 +89,11 @@ bool ADraggableObject::IsDrag() const
 	return IsDragFlag;
 }
 
+float ADraggableObject::GetDistance() const
+{
+	return Dist;
+}
+
 FVector ADraggableObject::CalculateDragPivot() const
 {
 	const auto StaticMesh = GetStaticMeshComponent();
@@ -109,11 +113,11 @@ FVector ADraggableObject::CalculateDragPivot() const
 			{
 				const auto SocketWorldLocation = SocketTransform.GetLocation();
 		
-				const float Dist = FVector::Dist(SocketWorldLocation, BEAR->GetActorLocation());
+				const float SocketDist = FVector::Dist(SocketWorldLocation, BEAR->GetActorLocation());
 			
-				if(Dist < MinDist)
+				if(SocketDist < MinDist)
 				{
-					MinDist = Dist;
+					MinDist = SocketDist;
 					ClosestSocketLocation = SocketWorldLocation;
 				}
 			}
