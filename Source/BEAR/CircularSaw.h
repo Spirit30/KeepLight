@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 
-#include "DraggableObject.h"
-#include "StackObjectRemover.h"
+#include "Catapult.h"
+#include "Mover.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "CircularSaw.generated.h"
@@ -27,13 +27,7 @@ class BEAR_API ACircularSaw : public AActor
 	float WoodDeckDoneVolume = 1.0f;
 
 	UPROPERTY(EditAnywhere)
-	AStackObjectRemover* WoodenDeckLeftMover;
-
-	UPROPERTY(EditAnywhere)
-	AStackObjectRemover* WoodenDeckRightMover;
-
-	UPROPERTY(EditAnywhere)
-	AStackObjectRemover* RockMover;
+	AMover* Mover;
 	
 	UPROPERTY(EditAnywhere)
 	AActor* CollisionOfChildActorHolder;
@@ -52,6 +46,9 @@ class BEAR_API ACircularSaw : public AActor
 
 	UPROPERTY(EditAnywhere)
 	AActor* Death;
+
+	UPROPERTY(EditAnywhere)
+	ACatapult* Catapult;
 	
 	FTimerHandle RemoveWoodenDeckTimerHandle;
 	

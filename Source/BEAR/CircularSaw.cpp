@@ -20,12 +20,6 @@ void ACircularSaw::Activate(bool flag, bool BearOrRock)
 	DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
 
 	Audio->SetActive(flag, true);
-
-	if(IsActive)
-	{
-		const auto Remover = BearOrRock ? WoodenDeckRightMover : WoodenDeckLeftMover;
-		Remover->StartRemove();
-	}
 }
 
 void ACircularSaw::BeginPlay()
@@ -40,14 +34,13 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if(IsActive && OtherActor == WoodenDeckRightMover->ActorToRemove)
+	if(IsActive && OtherActor == Mover->Target)
 	{
 		const auto WoodenDeck = Cast<ADraggableObject>(OtherActor);
 
 		if(WoodenDeck->IsDrag())
 		{
-			RockMover->StartRemove();
-			WoodenDeckRightMover->StartRemove();
+			Mover->StartMove();
 			
 			GetWorld()->GetTimerManager().SetTimer(RemoveWoodenDeckTimerHandle, this, &ACircularSaw::DisapearWoodenDeck, RemoveWoodenDeckTimer, false);
 			
@@ -55,6 +48,8 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 
 			const auto Button = Cast<ACircularSawButton>(ButtonActor);
 			Button->Deactivate();
+
+			Catapult->Construct();
 		}
 	}
 }
@@ -80,8 +75,7 @@ void ACircularSaw::ApearWoodenPlanks()
 
 void ACircularSaw::DisapearWoodenDeck()
 {
-	WoodenDeckRightMover->ActorToRemove->Destroy();
-
+	Mover->Target->Destroy();
 	ApearWoodenPlanks();
 }
 

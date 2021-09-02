@@ -14,11 +14,23 @@ ACatapult::ACatapult()
 
 void ACatapult::Shoot()
 {
-	if(State < Destroyed)
+	if(State < Shooting)
 	{
 		State = Shooting;
 		UGameplayStatics::PlaySound2D(this, ShootSound);
+		UGameplayStatics::PlaySound2D(this, FallingSound);
 	}
+}
+
+void ACatapult::Construct()
+{
+	Rock->Destroy();
+
+	//Show
+	WoodenPlankMesh->SetHiddenInGame(false);
+	RockMesh->SetHiddenInGame(false);
+
+	State = Constructing;
 }
 
 void ACatapult::BeginPlay()
@@ -144,14 +156,14 @@ void ACatapult::OnConstructing(float DeltaTime)
 
 void ACatapult::OnShooting(float DeltaTime)
 {
+	const auto CurrentLocation = RockMesh->GetComponentLocation();
 	const auto TargetLocation = Target->GetActorLocation();
 	
-	const auto Location = FMath::Lerp(RockMesh->GetComponentLocation(), TargetLocation, DeltaTime * ShootSpeed);
-
-	const float Dist = FVector::Dist(Location, TargetLocation);
+	const float Dist = FVector::Dist(CurrentLocation, TargetLocation);
 
 	if(Dist > ShootDist)
 	{
+		const auto Location = FMath::Lerp(CurrentLocation, TargetLocation, DeltaTime * ShootSpeed / Dist);
 		RockMesh->SetWorldLocation(Location);
 	}
 	else

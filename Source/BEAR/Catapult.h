@@ -44,7 +44,7 @@ class BEAR_API ACatapult : public AActor
 	float HitDot = 0.65f;
 
 	UPROPERTY(EditAnywhere)
-	float ShootSpeed = 5.0f;
+	float ShootSpeed = 100.0f;
 
 	UPROPERTY(EditAnywhere)
 	float ShootDist = 10.0f;
@@ -54,6 +54,9 @@ class BEAR_API ACatapult : public AActor
 
 	UPROPERTY(EditAnywhere)
 	USoundWave* ShootSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* FallingSound;
 	
 	public:	
 
@@ -61,6 +64,7 @@ class BEAR_API ACatapult : public AActor
 
 	UFUNCTION(BlueprintCallable)
 	void Shoot();
+	void Construct();
 
 	protected:
 

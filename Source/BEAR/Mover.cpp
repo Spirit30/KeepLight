@@ -55,6 +55,11 @@ void AMover::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(!Target)
+	{
+		return;
+	}
+
 	for(auto TargetView : TargetViews)
 	{
 		TargetView->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
@@ -118,6 +123,11 @@ void AMover::MovementEnd()
 	if(ShouldRotate)
 	{
 		Target->SetActorRotation(RotationDestination);
+	}
+
+	if(ShouldDestroyOnEnd && Target)
+	{
+		Target->Destroy();
 	}
 }
 

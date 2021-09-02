@@ -40,6 +40,9 @@ class BEAR_API AMover : public AActor
 
 	UPROPERTY(EditAnywhere)
 	FRotator RotationDestination;
+
+	UPROPERTY(EditAnywhere)
+	bool ShouldDestroyOnEnd;
 	
 	AMover();
 
