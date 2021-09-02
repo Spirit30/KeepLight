@@ -70,6 +70,7 @@ class BEAR_API ADraggableObject : public ADynamicObject
 	bool CanDrag() const;
 	bool IsDrag() const;
 	float GetDistance() const;
+	void ActivateDraggable(bool flag);
 
 	protected:
 

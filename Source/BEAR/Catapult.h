@@ -18,15 +18,12 @@ class BEAR_API ACatapult : public AActor
 	
 	UPROPERTY(EditAnywhere)
 	ABEARCharacter* BEAR;
-
-	// UPROPERTY(EditAnywhere)
-	// ADraggableObject* WoodenPlank;
-
+	
 	UPROPERTY(EditAnywhere)
 	ADraggableObject* Rock;
 
 	UPROPERTY(EditAnywhere)
-	AActor* Cable;
+	AActor* Target;
 
 	UPROPERTY(EditAnywhere)
 	ALevelSequenceActor* CatapultSequence;
@@ -54,6 +51,9 @@ class BEAR_API ACatapult : public AActor
 
 	UPROPERTY(EditAnywhere)
 	bool AutoHide = true;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* ShootSound;
 	
 	public:	
 
@@ -65,7 +65,7 @@ class BEAR_API ACatapult : public AActor
 	protected:
 
 	virtual void BeginPlay() override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	//virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void Tick(float DeltaTime) override;
 

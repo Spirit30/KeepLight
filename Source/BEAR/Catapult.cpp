@@ -4,6 +4,7 @@
 #include "Catapult.h"
 
 #include "Util.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ACatapult::ACatapult()
@@ -16,6 +17,7 @@ void ACatapult::Shoot()
 	if(State < Destroyed)
 	{
 		State = Shooting;
+		UGameplayStatics::PlaySound2D(this, ShootSound);
 	}
 }
 
@@ -42,37 +44,38 @@ void ACatapult::BeginPlay()
 	}
 	else
 	{
+		Rock->ActivateDraggable(false);
 		State = Ready;
 	}
 }
 
-void ACatapult::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	Super::NotifyActorBeginOverlap(OtherActor);
-
-	if(State == NotReady)
-	{
-		// if(OtherActor == WoodenPlank && WoodenPlank->IsDrag())
-		// {
-		// 	//Drop Draggable
-		// 	BEAR->StopInteract();
-		// 	
-		// 	//Set Graphics as Draggables are
-		// 	WoodenPlankMesh->SetWorldLocation(WoodenPlank->GetStaticMeshComponent()->GetComponentLocation());
-		// 	RockMesh->SetWorldLocation(Rock->GetStaticMeshComponent()->GetComponentLocation());
-		//
-		// 	//Destroy Draggables
-		// 	WoodenPlank->Destroy();
-		// 	Rock->Destroy();
-		//
-		// 	//Show
-		// 	WoodenPlankMesh->SetHiddenInGame(false);
-		// 	RockMesh->SetHiddenInGame(false);
-		//
-		// 	State = Constructing;
-		// }
-	}
-}
+// void ACatapult::NotifyActorBeginOverlap(AActor* OtherActor)
+// {
+// 	Super::NotifyActorBeginOverlap(OtherActor);
+//
+// 	if(State == NotReady)
+// 	{
+// 		if(OtherActor == WoodenPlank && WoodenPlank->IsDrag())
+// 		{
+// 			//Drop Draggable
+// 			BEAR->StopInteract();
+// 			
+// 			//Set Graphics as Draggables are
+// 			WoodenPlankMesh->SetWorldLocation(WoodenPlank->GetStaticMeshComponent()->GetComponentLocation());
+// 			RockMesh->SetWorldLocation(Rock->GetStaticMeshComponent()->GetComponentLocation());
+// 		
+// 			//Destroy Draggables
+// 			WoodenPlank->Destroy();
+// 			Rock->Destroy();
+// 		
+// 			//Show
+// 			WoodenPlankMesh->SetHiddenInGame(false);
+// 			RockMesh->SetHiddenInGame(false);
+// 		
+// 			State = Constructing;
+// 		}
+// 	}
+// }
 
 void ACatapult::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -141,7 +144,7 @@ void ACatapult::OnConstructing(float DeltaTime)
 
 void ACatapult::OnShooting(float DeltaTime)
 {
-	const auto TargetLocation = Cable->GetActorLocation();
+	const auto TargetLocation = Target->GetActorLocation();
 	
 	const auto Location = FMath::Lerp(RockMesh->GetComponentLocation(), TargetLocation, DeltaTime * ShootSpeed);
 
@@ -154,8 +157,15 @@ void ACatapult::OnShooting(float DeltaTime)
 	else
 	{
 		RockMesh->DestroyComponent();
-		
-		CatapultSequence->GetSequencePlayer()->Play();
+
+		if(CatapultSequence)
+		{
+			CatapultSequence->GetSequencePlayer()->Play();
+		}
+		else
+		{
+			Rock->ActivateDraggable(true);
+		}
 		
 		State = Destroyed;
 	}

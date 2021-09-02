@@ -94,6 +94,14 @@ float ADraggableObject::GetDistance() const
 	return Dist;
 }
 
+void ADraggableObject::ActivateDraggable(bool flag)
+{
+	SetActorHiddenInGame(!flag);
+	const auto StaticMesh = GetStaticMeshComponent();
+	StaticMesh->SetSimulatePhysics(flag);
+	StaticMesh->SetCollisionEnabled(flag ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+}
+
 FVector ADraggableObject::CalculateDragPivot() const
 {
 	const auto StaticMesh = GetStaticMeshComponent();
