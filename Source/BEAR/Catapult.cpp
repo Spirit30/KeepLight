@@ -29,14 +29,21 @@ void ACatapult::BeginPlay()
 	InitialWoodenPlankMeshTransform = WoodenPlankMesh->GetComponentTransform();
 	InitialRockMeshTransform = RockMesh->GetComponentTransform();
 
-	//Hide
-	WoodenPlankMesh->SetHiddenInGame(true);
-	RockMesh->SetHiddenInGame(true);
+	if(AutoHide)
+	{
+		//Hide
+		WoodenPlankMesh->SetHiddenInGame(true);
+		RockMesh->SetHiddenInGame(true);
 
-	//Disable Physics
-	WoodenPlankMesh->SetSimulatePhysics(false);
-	WoodenPlankMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RockMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//Disable Physics
+		WoodenPlankMesh->SetSimulatePhysics(false);
+		WoodenPlankMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		RockMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else
+	{
+		State = Ready;
+	}
 }
 
 void ACatapult::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -45,25 +52,25 @@ void ACatapult::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if(State == NotReady)
 	{
-		if(OtherActor == WoodenPlank && WoodenPlank->IsDrag())
-		{
-			//Drop Draggable
-			BEAR->StopInteract();
-			
-			//Set Graphics as Draggables are
-			WoodenPlankMesh->SetWorldLocation(WoodenPlank->GetStaticMeshComponent()->GetComponentLocation());
-			RockMesh->SetWorldLocation(Rock->GetStaticMeshComponent()->GetComponentLocation());
-
-			//Destroy Draggables
-			WoodenPlank->Destroy();
-			Rock->Destroy();
-
-			//Show
-			WoodenPlankMesh->SetHiddenInGame(false);
-			RockMesh->SetHiddenInGame(false);
-
-			State = Constructing;
-		}
+		// if(OtherActor == WoodenPlank && WoodenPlank->IsDrag())
+		// {
+		// 	//Drop Draggable
+		// 	BEAR->StopInteract();
+		// 	
+		// 	//Set Graphics as Draggables are
+		// 	WoodenPlankMesh->SetWorldLocation(WoodenPlank->GetStaticMeshComponent()->GetComponentLocation());
+		// 	RockMesh->SetWorldLocation(Rock->GetStaticMeshComponent()->GetComponentLocation());
+		//
+		// 	//Destroy Draggables
+		// 	WoodenPlank->Destroy();
+		// 	Rock->Destroy();
+		//
+		// 	//Show
+		// 	WoodenPlankMesh->SetHiddenInGame(false);
+		// 	RockMesh->SetHiddenInGame(false);
+		//
+		// 	State = Constructing;
+		// }
 	}
 }
 

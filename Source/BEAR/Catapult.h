@@ -19,8 +19,8 @@ class BEAR_API ACatapult : public AActor
 	UPROPERTY(EditAnywhere)
 	ABEARCharacter* BEAR;
 
-	UPROPERTY(EditAnywhere)
-	ADraggableObject* WoodenPlank;
+	// UPROPERTY(EditAnywhere)
+	// ADraggableObject* WoodenPlank;
 
 	UPROPERTY(EditAnywhere)
 	ADraggableObject* Rock;
@@ -52,6 +52,9 @@ class BEAR_API ACatapult : public AActor
 	UPROPERTY(EditAnywhere)
 	float ShootDist = 10.0f;
 
+	UPROPERTY(EditAnywhere)
+	bool AutoHide = true;
+	
 	public:	
 
 	ACatapult();

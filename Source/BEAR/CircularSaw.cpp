@@ -17,8 +17,6 @@ void ACircularSaw::Activate(bool flag, bool BearOrRock)
 {
 	IsActive = flag;
 
-	SetActorRelativeLocation(IsActive ? ActiveOffset : FVector::ZeroVector);
-	CollisionOfChildActor->SetCollisionResponseToAllChannels(IsActive ? ECR_Block : ECR_Ignore);
 	DeathCollision->SetCollisionResponseToAllChannels(IsActive ? ECR_Overlap : ECR_Ignore);
 
 	Audio->SetActive(flag, true);
@@ -34,7 +32,6 @@ void ACircularSaw::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionOfChildActor = Cast<UStaticMeshComponent>(CollisionOfChildActorHolder->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	DeathCollision = Cast<USphereComponent>(Death->GetComponentByClass(USphereComponent::StaticClass()));
 	Audio = Cast<UAudioComponent>(GetComponentByClass(UAudioComponent::StaticClass()));
 }
@@ -79,10 +76,6 @@ void ACircularSaw::ApearWoodenPlanks()
 		const auto WoodenPlankMesh = Cast<UStaticMeshComponent>(WoodenPlankActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 		WoodenPlankMesh->SetHiddenInGame(false);
 	}
-
-	const auto WoodenPlankMesh = WoodenPlankDraggable->GetStaticMeshComponent();
-	WoodenPlankMesh->SetHiddenInGame(false);
-	WoodenPlankMesh->SetSimulatePhysics(true);
 }
 
 void ACircularSaw::DisapearWoodenDeck()

@@ -45,9 +45,6 @@ class BEAR_API ACircularSaw : public AActor
 	FRotator RotationSpeed = FRotator(300.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere)
-	ADraggableObject* WoodenPlankDraggable;
-
-	UPROPERTY(EditAnywhere)
 	TArray<AActor*> WoodenPlankStaticActors;
 
 	UPROPERTY(EditAnywhere)
@@ -70,7 +67,6 @@ class BEAR_API ACircularSaw : public AActor
 
 	private:
 
-	UStaticMeshComponent* CollisionOfChildActor;
 	UAudioComponent* Audio;
 	
 	bool IsActive;
