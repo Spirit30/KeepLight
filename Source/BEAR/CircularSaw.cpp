@@ -22,6 +22,11 @@ void ACircularSaw::Activate(bool flag, bool BearOrRock)
 	Audio->SetActive(flag, true);
 }
 
+void ACircularSaw::SetConveyorWork(bool Flag)
+{
+	IsConveyorWork = Flag;
+}
+
 void ACircularSaw::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,11 +39,31 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if(IsActive && OtherActor == Mover->Target)
+	if(OtherActor == Mover->Target)
 	{
-		const auto WoodenDeck = Cast<ADraggableObject>(OtherActor);
+		IsWoodenDeckIn = true;
+	}
+}
 
-		if(WoodenDeck->IsDrag())
+void ACircularSaw::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if(OtherActor == Mover->Target)
+	{
+		IsWoodenDeckIn = false;
+	}
+}
+
+void ACircularSaw::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if(IsActive)
+	{
+		AddActorLocalRotation(RotationSpeed * DeltaTime);
+
+		if(IsConveyorWork && IsWoodenDeckIn && !IsWoodenDeckDone)
 		{
 			Mover->StartMove();
 			
@@ -50,17 +75,9 @@ void ACircularSaw::NotifyActorBeginOverlap(AActor* OtherActor)
 			Button->Deactivate();
 
 			Catapult->Construct();
+
+			IsWoodenDeckDone = true;
 		}
-	}
-}
-
-void ACircularSaw::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if(IsActive)
-	{
-		AddActorLocalRotation(RotationSpeed * DeltaTime);
 	}
 }
 
@@ -70,6 +87,7 @@ void ACircularSaw::ApearWoodenPlanks()
 	{
 		const auto WoodenPlankMesh = Cast<UStaticMeshComponent>(WoodenPlankActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 		WoodenPlankMesh->SetHiddenInGame(false);
+		WoodenPlankMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 }
 

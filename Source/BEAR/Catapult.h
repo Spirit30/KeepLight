@@ -57,6 +57,9 @@ class BEAR_API ACatapult : public AActor
 
 	UPROPERTY(EditAnywhere)
 	USoundWave* FallingSound;
+
+	UPROPERTY(EditAnywhere)
+	float FallingSoundVolume = 0.25f;
 	
 	public:	
 

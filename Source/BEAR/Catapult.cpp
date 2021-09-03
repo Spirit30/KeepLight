@@ -18,7 +18,7 @@ void ACatapult::Shoot()
 	{
 		State = Shooting;
 		UGameplayStatics::PlaySound2D(this, ShootSound);
-		UGameplayStatics::PlaySound2D(this, FallingSound);
+		UGameplayStatics::PlaySound2D(this, FallingSound, FallingSoundVolume);
 	}
 }
 

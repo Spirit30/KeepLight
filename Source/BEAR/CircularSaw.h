@@ -55,19 +55,25 @@ class BEAR_API ACircularSaw : public AActor
 	ACircularSaw();
 
 	void Activate(bool flag, bool BearOrRock);
+	UFUNCTION(BlueprintCallable)
+	void SetConveyorWork(bool Flag);
 
 	protected:
 
 	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaTime) override;
 
 	private:
 
 	UAudioComponent* Audio;
-	
-	bool IsActive;
 	USphereComponent* DeathCollision;
+
+	bool IsActive;
+	bool IsConveyorWork;
+	bool IsWoodenDeckIn;
+	bool IsWoodenDeckDone;
 
 	void ApearWoodenPlanks();
 
