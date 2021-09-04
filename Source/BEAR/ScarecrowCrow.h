@@ -64,9 +64,6 @@ class BEAR_API AScarecrowCrow : public AActor
 	FVector LeaveDirection = FVector(0, 1000, 1000);
 
 	UPROPERTY(EditAnywhere)
-	float DestroyZ = 2000;
-
-	UPROPERTY(EditAnywhere)
 	AActor* NextControlPoint;
 	
 	//Used by ScarecrowCrow Animation Blueprint
@@ -114,9 +111,8 @@ class BEAR_API AScarecrowCrow : public AActor
 	void OnReturnBack();
 	void OnLeave();
 	void OnStop();
-	void OnDelete();
-	void TrySetPassed();
 
 	void MoveSmoothTo(FVector TargetLocation, float DeltaSeconds);
 	void UpdateRotation(FVector TargetLocation);
+	void EnableControlPoint(bool Flag);
 };

@@ -78,8 +78,6 @@ void AScarecrowCrow::Tick(float DeltaSeconds)
 	}
 	
 	IsAttackAnimation = State > Calm;
-
-	TrySetPassed();
 }
 
 inline void AScarecrowCrow::OnCalm(AActor* OtherActor)
@@ -88,6 +86,9 @@ inline void AScarecrowCrow::OnCalm(AActor* OtherActor)
 	{
 		AttackTimer = AttackDelay;
 		State = Angry;
+
+		
+		EnableControlPoint(false);
 
 		//Sound
 		UGameplayStatics::PlaySoundAtLocation(this, CrowSound, GetActorLocation(), FRotator::ZeroRotator, SoundVolume);
@@ -145,11 +146,6 @@ void AScarecrowCrow::OnLeave(float DeltaSeconds)
 	
 	const auto HatLocation = GetActorLocation() + HatOffset;
 	Hat->SetActorLocation(HatLocation);
-
-	if(Location.Z > DestroyZ)
-	{
-		OnDelete();
-	}
 }
 
 void AScarecrowCrow::OnAttack()
@@ -202,18 +198,14 @@ void AScarecrowCrow::OnLeave()
 	Death->Destroy();
 	Hat->GrabByCrow();
 	State = Leave;
+	
+	EnableControlPoint(true);
 }
 
 void AScarecrowCrow::OnStop()
 {
 	GetComponentByClass(USkeletalMeshComponent::StaticClass())->SetComponentTickEnabled(false);
 	SetActorTickEnabled(false);
-}
-
-void AScarecrowCrow::OnDelete()
-{
-	Hat->Delete();
-	Destroy();
 }
 
 void AScarecrowCrow::MoveSmoothTo(FVector TargetLocation, float DeltaSeconds)
@@ -240,13 +232,8 @@ void AScarecrowCrow::UpdateRotation(FVector TargetLocation)
 	}
 }
 
-void AScarecrowCrow::TrySetPassed()
+void AScarecrowCrow::EnableControlPoint(bool Flag)
 {
-	const auto Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	const auto NextControlPointBlockingBox = Cast<UBoxComponent>(Util::GetComponentByName(NextControlPoint, "BlockingBox"));
-
-	if(Character->GetActorLocation().Y <  NextControlPointBlockingBox->GetComponentLocation().Y)
-	{
-		OnDelete();
-	}
+	const auto NextControlPointBox = Cast<UBoxComponent>(Util::GetComponentByName(NextControlPoint, "Box"));
+	NextControlPointBox->SetCollisionEnabled(Flag ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 }
