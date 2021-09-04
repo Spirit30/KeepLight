@@ -17,7 +17,8 @@ public class BEAR : ModuleRules
 			"LevelSequence",
 			"MovieScene",
 			"PhysicsCore",
-			"CableComponent"
+			"CableComponent",
+			"UMG"
 		});
 	}
 }
