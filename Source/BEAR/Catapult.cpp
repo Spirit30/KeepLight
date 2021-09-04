@@ -56,7 +56,7 @@ void ACatapult::BeginPlay()
 	}
 	else
 	{
-		Rock->ActivateDraggable(false);
+		GetWorld()->GetTimerManager().SetTimer(DisableRockTimerHandler, this, &ACatapult::DisableRock, DisableRockTimer, false);
 		State = Ready;
 	}
 }
@@ -183,3 +183,7 @@ void ACatapult::OnShooting(float DeltaTime)
 	}
 }
 
+void ACatapult::DisableRock()
+{
+	Rock->ActivateDraggable(false);
+}

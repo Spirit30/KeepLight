@@ -60,6 +60,10 @@ class BEAR_API ACatapult : public AActor
 
 	UPROPERTY(EditAnywhere)
 	float FallingSoundVolume = 0.25f;
+
+	UPROPERTY(EditAnywhere)
+	
+	float DisableRockTimer = 0.2f;
 	
 	public:	
 
@@ -72,7 +76,6 @@ class BEAR_API ACatapult : public AActor
 	protected:
 
 	virtual void BeginPlay() override;
-	//virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void Tick(float DeltaTime) override;
 
@@ -94,8 +97,11 @@ class BEAR_API ACatapult : public AActor
 
 	FTransform InitialWoodenPlankMeshTransform;
 	FTransform InitialRockMeshTransform;
+	FTimerHandle DisableRockTimerHandler;
 
 	void OnConstructing(float DeltaTime);
 	void OnShooting(float DeltaTime);
-	
+
+	UFUNCTION()
+	void DisableRock();
 };
