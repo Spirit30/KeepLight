@@ -52,7 +52,10 @@ class BEAR_API AHook : public AActor
 	void SetPaused(bool Flag);
 
 	UFUNCTION()
-	void OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnTakeTriggerEnter(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnTakeTriggerExit(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+
 
 	protected:
 
@@ -85,6 +88,7 @@ class BEAR_API AHook : public AActor
 	AActor* TakenActor;
 	bool IsReadyToDrop;
 	bool IsPausedFlag;
+	bool IsInDestinationArea;
 
 	void SetState(HookState NewState);
 	void RedirectVertical();

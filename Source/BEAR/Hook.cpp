@@ -37,13 +37,13 @@ void AHook::SetPaused(bool Flag)
 	IsPausedFlag = Flag;
 }
 
-void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AHook::OnTakeTriggerEnter(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Logger::ToScreen("CONTACT: " + OtherActor->GetName(), 2.0f, FColor::Red);
 
 	if(TakeActors.Contains(OtherActor))
 	{
-		if(!TakenActor && State == MoveVertical)
+		if(!TakenActor && State == MoveVertical && !IsInDestinationArea)
 		{
 			// const int32 Index = TakeActors.IndexOfByKey(OtherActor);
 			// if(!Movers[Index]->IsMove())
@@ -61,6 +61,8 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 	}
 	else if(OtherActor == DestinationArea)
 	{
+		IsInDestinationArea = true;
+		
 		if(TakenActor)
 		{
 			const int32 Index = TakeActors.IndexOfByKey(TakenActor);
@@ -100,12 +102,23 @@ void AHook::OnTakeTrigger(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, 
 	}
 }
 
+void AHook::OnTakeTriggerExit(UPrimitiveComponent* ThisTrigger, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
+	//Logger::ToScreen("EXIT: " + OtherActor->GetName(), 2.0f, FColor::Green);
+
+	if(OtherActor == DestinationArea)
+	{
+		IsInDestinationArea = false;
+	}
+}
+
 void AHook::BeginPlay()
 {
 	Super::BeginPlay();
 
 	TakeTrigger = Cast<USphereComponent>(Util::GetComponentByName(this, "TakeTrigger"));
-	TakeTrigger->OnComponentBeginOverlap.AddDynamic(this, &AHook::OnTakeTrigger);
+	TakeTrigger->OnComponentBeginOverlap.AddDynamic(this, &AHook::OnTakeTriggerEnter);
+	TakeTrigger->OnComponentEndOverlap.AddDynamic(this, &AHook::OnTakeTriggerExit);
 	
 	const auto MoveLimit = Cast<UBoxComponent>(Util::GetComponentByName(this, "MoveLimit"));
 	MoveLimit->UpdateBounds();
