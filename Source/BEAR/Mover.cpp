@@ -3,7 +3,7 @@
 
 #include "Mover.h"
 
-#include "Logger.h"
+//#include "Logger.h"
 
 AMover::AMover()
 {
@@ -70,7 +70,7 @@ void AMover::Tick(float DeltaTime)
 	const auto Destination = GetDestination();
 	const float Dist = FVector::Dist(CurrentLocation, Destination);
 
-	Logger::ToScreen("Moving " + Target->GetName() + " Dist ", Dist, DeltaTime, FColor::Yellow);
+	//Logger::ToScreen("Moving " + Target->GetName() + " Dist ", Dist, DeltaTime, FColor::Yellow);
 
 	if(!Interpolate)
 	{
@@ -91,8 +91,8 @@ void AMover::Tick(float DeltaTime)
 			Target->SetActorRotation(Rotation);
 		}
 
-		Logger::ToScreen("Moving - " + Target->GetName(), DeltaTime, FColor::Orange);
-		Logger::DrawLine(GetWorld(), Location, Destination, DeltaTime, FColor::Orange);
+		//Logger::ToScreen("Moving - " + Target->GetName(), DeltaTime, FColor::Orange);
+		//Logger::DrawLine(GetWorld(), Location, Destination, DeltaTime, FColor::Orange);
 	}
 	else
 	{
