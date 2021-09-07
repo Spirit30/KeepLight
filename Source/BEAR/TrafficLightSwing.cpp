@@ -3,6 +3,7 @@
 
 #include "TrafficLightSwing.h"
 
+#include "Logger.h"
 #include "Kismet/GameplayStatics.h"
 
 ATrafficLightSwing::ATrafficLightSwing()
@@ -17,7 +18,6 @@ bool ATrafficLightSwing::GetIsBearSwing()
 
 void ATrafficLightSwing::ResetAcumulativeSwingForce()
 {
-	AcumulativeSwingForce = FVector::ZeroVector;
 	TrafficLightDraggable->GetStaticMeshComponent()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 }
 
@@ -74,12 +74,35 @@ void ATrafficLightSwing::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(TrafficLightDraggable->GetActorLocation());
+	const auto Location = TrafficLightDraggable->GetActorLocation();
+
+	SetActorLocation(Location);
 
 	if(GetIsBearSwing())
 	{
-		AcumulativeSwingForce += SwingForce * AcumulateSwingForceCoef;
-		TrafficLightDraggable->GetStaticMeshComponent()->AddForce(AcumulativeSwingForce * Bear->MoveRightInputValue);
+		//On Input Start Or End
+		if(Bear->MoveRightInputValue != PreviousInputValue)
+		{
+			InputTime = 0.0f;		
+			PreviousInputValue = Bear->MoveRightInputValue;
+		}
+		//On Input
+		else
+		{
+			if(Bear->MoveRightInputValue)
+			{
+				InputTime += DeltaTime;
+			}
+			else
+			{
+				InputTime -= DeltaTime;
+				InputTime = FMath::Max(0.0f, InputTime);
+			}
+		}
+
+		const float Force = -Bear->MoveRightInputValue * BaseForce * AccelerateCurve->GetFloatValue(InputTime) * DeltaTime;
+		const auto FinalForce = FVector(0.0f, Force, 0);
+		TrafficLightDraggable->GetStaticMeshComponent()->AddForce(FinalForce);
 	}
 }
 

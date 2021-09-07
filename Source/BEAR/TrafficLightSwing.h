@@ -31,13 +31,13 @@ class BEAR_API ATrafficLightSwing : public AActor
 
 	UPROPERTY(EditAnywhere)
 	FRotator UpsideDown;
+
+	UPROPERTY(EditAnywhere)
+	float BaseForce = 10000.0f;
 	
 	UPROPERTY(EditAnywhere)
-	FVector SwingForce = FVector(0, 100, 0);
-
-	UPROPERTY(EditAnywhere)
-	float AcumulateSwingForceCoef = 0.1f;
-
+	UCurveFloat* AccelerateCurve;
+	
 	UPROPERTY(EditAnywhere)
 	USoundWave* FallSound;
 	
@@ -62,9 +62,10 @@ class BEAR_API ATrafficLightSwing : public AActor
 
 	FVector InitialLocation;
 	FRotator InitialRotation;
-	FVector AcumulativeSwingForce;
 	bool IsPhysicsActive;
 	bool CanSwing;
+	float InputTime;
+	float PreviousInputValue;
 
 	void SetPhysicsConstraintEnabled(bool flag);
 };

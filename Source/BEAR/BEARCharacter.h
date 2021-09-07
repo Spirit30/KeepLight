@@ -73,6 +73,7 @@ class ABEARCharacter : public ACharacter
 	UFUNCTION(BlueprintCallable)
 	void SetPullUp(bool flag);
 	void SetIsSwing(AActor* SwingParent);
+	UFUNCTION(BlueprintCallable)
 	bool GetIsSwing();
 	UFUNCTION(BlueprintCallable)
 	void SetUnderwater(bool flag);
