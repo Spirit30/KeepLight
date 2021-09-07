@@ -72,7 +72,7 @@ class ABEARCharacter : public ACharacter
 	void StopInteract();
 	UFUNCTION(BlueprintCallable)
 	void SetPullUp(bool flag);
-	void SetIsSwing(bool flag);
+	void SetIsSwing(AActor* SwingParent);
 	bool GetIsSwing();
 	UFUNCTION(BlueprintCallable)
 	void SetUnderwater(bool flag);
@@ -89,6 +89,9 @@ class ABEARCharacter : public ACharacter
 
 	private:
 
+	TArray<ADraggableObject*> CloseDragObjects;
+	TArray<AInteractable*> CloseInteractables;
+
 	float MinWalkSpeed;
 	float MaxWalkSpeed;
 	float FallingTimer;
@@ -99,9 +102,6 @@ class ABEARCharacter : public ACharacter
 
 	bool IsSwing;
 	bool IsUnderwater;
-	
-	TArray<ADraggableObject*> CloseDragObjects;
-	TArray<AInteractable*> CloseInteractables;
 
 	//Input interface
 	//------------------------------

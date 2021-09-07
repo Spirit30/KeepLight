@@ -3,6 +3,7 @@
 #include "BEARCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "Logger.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -272,9 +273,25 @@ void ABEARCharacter::SetPullUp(bool flag)
 	}
 }
 
-void ABEARCharacter::SetIsSwing(bool flag)
+void ABEARCharacter::SetIsSwing(AActor* SwingParent)
 {
-	IsSwing = flag;
+	if(SwingParent)
+	{
+		IsSwing = true;
+		GetCharacterMovement()->DisableMovement();
+		SetActorEnableCollision(false);
+		AttachToActor(SwingParent, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "Swing");
+	}
+	else
+	{
+		IsSwing = false;
+		GetCharacterMovement()->SetDefaultMovementMode();
+		SetActorEnableCollision(true);
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+		SetActorRotation(FRotator::ZeroRotator);
+		Jump();
+	}
 }
 
 bool ABEARCharacter::GetIsSwing()
@@ -290,6 +307,11 @@ void ABEARCharacter::SetUnderwater(bool flag)
 
 void ABEARCharacter::TryJump()
 {
+	if(GetIsSwing())
+	{
+		SetIsSwing(nullptr);
+	}
+	
 	if(IsUnderwater)
 	{
 		return;

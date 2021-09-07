@@ -64,6 +64,7 @@ class BEAR_API ATrafficLightSwing : public AActor
 	FRotator InitialRotation;
 	FVector AcumulativeSwingForce;
 	bool IsPhysicsActive;
+	bool CanSwing;
 
 	void SetPhysicsConstraintEnabled(bool flag);
 };

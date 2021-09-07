@@ -3,7 +3,6 @@
 
 #include "TrafficLightSwing.h"
 
-#include "Logger.h"
 #include "Kismet/GameplayStatics.h"
 
 ATrafficLightSwing::ATrafficLightSwing()
@@ -43,8 +42,13 @@ void ATrafficLightSwing::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if(IsPhysicsActive && OtherActor == Bear)
 	{
-		Bear->SetIsSwing(true);
-		ResetAcumulativeSwingForce();
+		CanSwing = !CanSwing;
+		
+		if(CanSwing)
+		{
+			Bear->SetIsSwing(TrafficLightDraggable);
+			ResetAcumulativeSwingForce();
+		}
 	}
 	else if(OtherActor == TrafficLightDraggable)
 	{
@@ -62,7 +66,6 @@ void ATrafficLightSwing::NotifyActorEndOverlap(AActor* OtherActor)
 
 	if(IsPhysicsActive && OtherActor == Bear)
 	{
-		Bear->SetIsSwing(false);
 		ResetAcumulativeSwingForce();
 	}
 }
@@ -73,7 +76,7 @@ void ATrafficLightSwing::Tick(float DeltaTime)
 
 	SetActorLocation(TrafficLightDraggable->GetActorLocation());
 
-	if(Bear->GetIsSwing())
+	if(GetIsBearSwing())
 	{
 		AcumulativeSwingForce += SwingForce * AcumulateSwingForceCoef;
 		TrafficLightDraggable->GetStaticMeshComponent()->AddForce(AcumulativeSwingForce * Bear->MoveRightInputValue);
