@@ -19,6 +19,7 @@ bool ATrafficLightSwing::GetIsBearSwing()
 void ATrafficLightSwing::ResetAcumulativeSwingForce()
 {
 	TrafficLightDraggable->GetStaticMeshComponent()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	TrafficLightDraggable->GetStaticMeshComponent()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 }
 
 void ATrafficLightSwing::BeginPlay()
