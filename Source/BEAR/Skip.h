@@ -28,12 +28,16 @@ class BEAR_API ASkip : public AActor
 	void ResetTimeAndDeaths();
 	UFUNCTION(BlueprintCallable)
 	void OnDeath();
+	UFUNCTION(BlueprintCallable)
+	void OnClose();
 
 	protected:
 
 	virtual void BeginPlay() override;
 
 	private:
+
+	UUserWidget* ConfirmPopup;
 
 	static int32 Deaths;
 	float TimeSec;

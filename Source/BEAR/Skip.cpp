@@ -25,7 +25,12 @@ void ASkip::BeginPlay()
 
 void ASkip::ShowConfirmPopup()
 {
-	const auto ConfirmPopup = CreateWidget(GetWorld(), ConfirmPopupClass);
+	if(ConfirmPopup)
+	{
+		return;	
+	}
+	
+	ConfirmPopup = CreateWidget(GetWorld(), ConfirmPopupClass);
 
 	const auto Player = GetWorld()->GetFirstPlayerController();
 	FInputModeUIOnly Mode;
@@ -58,5 +63,11 @@ void ASkip::ResetTimeAndDeaths()
 void ASkip::OnDeath()
 {
 	++Deaths;
+}
+
+void ASkip::OnClose()
+{
+	ResetTimeAndDeaths();
+	ConfirmPopup = nullptr;
 }
 
