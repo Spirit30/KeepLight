@@ -54,10 +54,15 @@ void ASkip::Tick(float DeltaTime)
 	}
 }
 
+void ASkip::ResetTime()
+{
+	TimeSec = 0.0f;
+}
+
 void ASkip::ResetTimeAndDeaths()
 {
+	ResetTime();
 	Deaths = 0;
-	TimeSec = 0.0f;
 }
 
 void ASkip::OnDeath()

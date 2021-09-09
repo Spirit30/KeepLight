@@ -25,6 +25,8 @@ class BEAR_API ASkip : public AActor
 	ASkip();
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
+	void ResetTime();
+	UFUNCTION(BlueprintCallable)
 	void ResetTimeAndDeaths();
 	UFUNCTION(BlueprintCallable)
 	void OnDeath();
