@@ -49,6 +49,8 @@ class BEAR_API AMover : public AActor
 	UFUNCTION(BlueprintCallable)
 	void StartMove();
 	UFUNCTION(BlueprintCallable)
+	void StartMoveToNewTarget(AActor* NewTarget);
+	UFUNCTION(BlueprintCallable)
 	void StopMove();
 	bool IsMove() const;
 

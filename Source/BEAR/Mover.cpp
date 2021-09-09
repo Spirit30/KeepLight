@@ -21,6 +21,12 @@ void AMover::StartMove()
 	IsMoveFlag = true;
 }
 
+void AMover::StartMoveToNewTarget(AActor* NewTarget)
+{
+	Target = NewTarget;
+	StartMove();
+}
+
 void AMover::BeginPlay()
 {
 	Super::BeginPlay();
