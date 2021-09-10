@@ -76,6 +76,8 @@ class BEAR_API AScarecrowCrow : public AActor
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void Tick(float DeltaSeconds) override;
 
+	void RemoveDeath();
+
 	private:
 
 	USphereComponent* BearCollision;

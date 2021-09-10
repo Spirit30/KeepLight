@@ -80,13 +80,26 @@ void AScarecrowCrow::Tick(float DeltaSeconds)
 	IsAttackAnimation = State > Calm;
 }
 
+void AScarecrowCrow::RemoveDeath()
+{
+	if(Death)
+	{
+		Death->Destroy();
+	}
+}
+
 inline void AScarecrowCrow::OnCalm(AActor* OtherActor)
 {
 	if(OtherActor == Bear)
 	{
+		if(Hat->IsAttached())
+		{
+			RemoveDeath();
+			Bear->DisableInput(GetWorld()->GetFirstPlayerController());
+		}
+		
 		AttackTimer = AttackDelay;
 		State = Angry;
-
 		
 		EnableControlPoint(false);
 
@@ -195,11 +208,12 @@ void AScarecrowCrow::OnReturnBack()
 
 void AScarecrowCrow::OnLeave()
 {
-	Death->Destroy();
 	Hat->GrabByCrow();
 	State = Leave;
 	
 	EnableControlPoint(true);
+
+	Bear->EnableInput(GetWorld()->GetFirstPlayerController());
 }
 
 void AScarecrowCrow::OnStop()
